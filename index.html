@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANow VOC Command Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0b0f19; }
+        .neon-border-blue { border: 1px solid rgba(59, 130, 246, 0.3); box-shadow: 0 0 15px rgba(59, 130, 246, 0.1); }
+        .neon-border-green { border: 1px solid rgba(16, 185, 129, 0.3); box-shadow: 0 0 15px rgba(16, 185, 129, 0.1); }
+        .neon-border-orange { border: 1px solid rgba(245, 158, 11, 0.3); box-shadow: 0 0 15px rgba(245, 158, 11, 0.1); }
+    </style>
+</head>
+<body class="text-gray-100 min-h-screen pb-12">
+
+    <header class="border-b border-gray-800 bg-[#111827] sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="h-3 w-3 rounded-full bg-emerald-500 animate-pulse"></div>
+                <span class="text-xl font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
+                    ANow VOC COMMAND CENTER
+                </span>
+            </div>
+            <div class="flex space-x-2 bg-gray-900 p-1 rounded-lg border border-gray-800">
+                <button onclick="switchTab('overview')" id="btn-overview" class="px-4 py-1.5 rounded-md text-sm font-medium transition bg-blue-600 text-white">Executive Overview</button>
+                <button onclick="switchTab('defects')" id="btn-defects" class="px-4 py-1.5 rounded-md text-sm font-medium text-gray-400 hover:text-white transition">Defect Deep-Dive</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        
+        <div class="bg-[#111827] p-4 rounded-xl border border-gray-800 flex flex-wrap items-center justify-between gap-4 mb-8">
+            <div class="flex items-center space-x-4">
+                <div>
+                    <label class="block text-xs text-gray-400 font-semibold uppercase mb-1">Store Filter</label>
+                    <select id="store-selector" onchange="processAndDisplayData()" class="bg-gray-900 border border-gray-700 text-white rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-blue-500">
+                        <option value="All">All Stores</option>
+                    </select>
+                </div>
+            </div>
+            <div class="text-xs text-gray-500">
+                Data Connection: <span id="sync-status" class="text-amber-400 font-semibold">Connecting to Google Sheet...</span>
+            </div>
+        </div>
+
+        <div id="tab-overview" class="space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-[#111827] p-6 rounded-2xl neon-border-blue relative overflow-hidden group">
+                    <p class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Total VOC Records</p>
+                    <h3 id="metric-total-voc" class="text-4xl font-bold text-white mt-2">--</h3>
+                    <p class="text-xs text-blue-400 mt-2 flex items-center">Live feed calculation</p>
+                </div>
+                <div class="bg-[#111827] p-6 rounded-2xl neon-border-green relative overflow-hidden group">
+                    <p class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Unique Stores Reporting</p>
+                    <h3 id="metric-active-stores" class="text-4xl font-bold text-emerald-400 mt-2">--</h3>
+                    <p class="text-xs text-gray-500 mt-2">Active darkstore footprint</p>
+                </div>
+                <div class="bg-[#111827] p-6 rounded-2xl neon-border-orange relative overflow-hidden group">
+                    <p class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Latest Logged Issue</p>
+                    <h3 id="metric-latest-issue" class="text-lg font-semibold text-amber-500 mt-2 truncate">--</h3>
+                    <p class="text-xs text-amber-400/80 mt-2">Requires review and response</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-defects" class="hidden space-y-6">
+            <div class="bg-[#111827] rounded-xl border border-gray-800 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-800 bg-gray-900/50">
+                    <h3 class="text-lg font-semibold text-white">Live VOC Ledger - "Daily VOCs"</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead id="table-head" class="text-xs font-semibold uppercase text-gray-400 bg-gray-900/20">
+                            </thead>
+                        <tbody id="data-table-body" class="text-sm divide-y divide-gray-800 text-gray-300">
+                            <tr>
+                                <td colspan="4" class="p-8 text-center text-gray-500">Loading live spreadsheet records...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Live link connected directly to the Daily VOCs publication matrix
+const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRnz7Ypt9a2KVqhQsU2s8qxg6Wf7qtvAwAPOsRhoSWxnwILyHQXmW2W66TsaNWA2WO7vdUG55MPIDTf/pub?gid=0&single=true&output=csv';
+
+        let parsedHeaders = [];
+        let globalRecords = [];
+
+        async function fetchSpreadsheetData() {
+            try {
+                const response = await fetch(GOOGLE_SHEET_CSV_URL);
+                if (!response.ok) throw new Error('Network error fetching sheet data');
+                const dataText = await response.text();
+                
+                parseCSV(dataText);
+                document.getElementById('sync-status').innerText = 'Synced Successfully';
+                document.getElementById('sync-status').className = 'text-emerald-400 font-semibold';
+                
+                populateStoreFilter();
+                processAndDisplayData();
+            } catch (error) {
+                console.error(error);
+                document.getElementById('sync-status').innerText = 'Sync Error';
+                document.getElementById('sync-status').className = 'text-red-400 font-semibold';
+            }
+        }
+
+        function parseCSV(text) {
+            const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+            if (lines.length === 0) return;
+
+            // Simple CSV line parser split by comma
+            parsedHeaders = lines[0].split(',').map(h => h.replace(/^"|"$/g, ''));
+            
+            globalRecords = lines.slice(1).map(line => {
+                const cells = line.split(',').map(c => c.replace(/^"|"$/g, ''));
+                let rowObj = {};
+                parsedHeaders.forEach((header, index) => {
+                    rowObj[header.toLowerCase().trim()] = cells[index] || '';
+                });
+                return rowObj;
+            });
+        }
+
+        function populateStoreFilter() {
+            const storeSelector = document.getElementById('store-selector');
+            // Looks for variations of store code column tags dynamically
+            const storeKey = Object.keys(globalRecords[0] || {}).find(k => k.includes('store') || k.includes('site')) || '';
+            
+            if (storeKey) {
+                const uniqueStores = [...new Set(globalRecords.map(r => r[storeKey]))].filter(Boolean).sort();
+                uniqueStores.forEach(store => {
+                    const opt = document.createElement('option');
+                    opt.value = store;
+                    opt.innerText = store;
+                    storeSelector.appendChild(opt);
+                });
+            }
+        }
+
+        function processAndDisplayData() {
+            const selectedStore = document.getElementById('store-selector').value;
+            const storeKey = Object.keys(globalRecords[0] || {}).find(k => k.includes('store') || k.includes('site')) || '';
+            const issueKey = Object.keys(globalRecords[0] || {}).find(k => k.includes('issue') || k.includes('comment') || k.includes('feedback')) || '';
+
+            let filtered = globalRecords;
+            if (selectedStore !== 'All' && storeKey) {
+                filtered = globalRecords.filter(r => r[storeKey] === selectedStore);
+            }
+
+            // Calculate Metrics
+            document.getElementById('metric-total-voc').innerText = filtered.length;
+            
+            const uniqueStoresCount = storeKey ? [...new Set(filtered.map(r => r[storeKey]))].filter(Boolean).length : 0;
+            document.getElementById('metric-active-stores').innerText = uniqueStoresCount;
+
+            const latestIssueText = filtered.length > 0 && issueKey ? filtered[filtered.length - 1][issueKey] : 'No recorded issues';
+            document.getElementById('metric-latest-issue').innerText = latestIssueText;
+
+            // Build dynamic table headings matching your spreadsheet layout
+            const tableHead = document.getElementById('table-head');
+            tableHead.innerHTML = `<tr>${parsedHeaders.slice(0, 5).map(h => `<th class="p-4">${h}</th>`).join('')}</tr>`;
+
+            // Build table rows
+            const tbody = document.getElementById('data-table-body');
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-500">No layout match found</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(row => {
+                const cellValues = Object.values(row).slice(0, 5);
+                return `<tr class="hover:bg-gray-900/40 transition">
+                    ${cellValues.map((val, idx) => `<td class="p-4 ${idx === 0 ? 'text-blue-400 font-medium' : 'text-gray-300'}">${val}</td>`).join('')}
+                </tr>`;
+            }).join('');
+        }
+
+        function switchTab(tabName) {
+            document.getElementById('tab-overview').classList.toggle('hidden', tabName !== 'overview');
+            document.getElementById('tab-defects').classList.toggle('hidden', tabName !== 'defects');
+            
+            document.getElementById('btn-overview').className = tabName === 'overview' ? 'px-4 py-1.5 rounded-md text-sm font-medium transition bg-blue-600 text-white' : 'px-4 py-1.5 rounded-md text-sm font-medium text-gray-400 hover:text-white transition';
+            document.getElementById('btn-defects').className = tabName === 'defects' ? 'px-4 py-1.5 rounded-md text-sm font-medium transition bg-blue-600 text-white' : 'px-4 py-1.5 rounded-md text-sm font-medium text-gray-400 hover:text-white transition';
+        }
+
+        window.onload = () => { fetchSpreadsheetData(); };
+    </script>
+</body>
+</html>
