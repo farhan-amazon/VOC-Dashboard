@@ -3,40 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ANow VOC Command Center</title>
+    <title>ANow VOC Executive Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #0b0f19; }
-        .neon-border-blue { border: 1px solid rgba(59, 130, 246, 0.3); box-shadow: 0 0 15px rgba(59, 130, 246, 0.1); }
-        .neon-border-green { border: 1px solid rgba(16, 185, 129, 0.3); box-shadow: 0 0 15px rgba(16, 185, 129, 0.1); }
-        .neon-border-orange { border: 1px solid rgba(245, 158, 11, 0.3); box-shadow: 0 0 15px rgba(245, 158, 11, 0.1); }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .card-shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05); }
     </style>
 </head>
-<body class="text-gray-100 min-h-screen pb-12">
+<body class="min-h-screen pb-12">
 
-    <header class="border-b border-gray-800 bg-[#111827] sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="h-3 w-3 rounded-full bg-emerald-500 animate-pulse"></div>
-                <span class="text-xl font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
-                    ANow VOC COMMAND CENTER
-                </span>
+    <header class="bg-[#0f172a] text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="h-4 w-4 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
+                <div>
+                    <span class="text-xs font-semibold tracking-widest text-blue-400 uppercase block">Amazon Now (ANow)</span>
+                    <h1 class="text-xl font-bold tracking-tight text-white">VOC Strategy & Compliance Portal</h1>
+                </div>
             </div>
-            <div class="flex space-x-2 bg-gray-900 p-1 rounded-lg border border-gray-800">
-                <button onclick="switchTab('overview')" id="btn-overview" class="px-4 py-1.5 rounded-md text-sm font-medium transition bg-blue-600 text-white">Executive Overview</button>
-                <button onclick="switchTab('defects')" id="btn-defects" class="px-4 py-1.5 rounded-md text-sm font-medium text-gray-400 hover:text-white transition">Defect Deep-Dive</button>
+            <div class="flex space-x-1 bg-slate-800 p-1 rounded-lg border border-slate-700">
+                <button onclick="switchTab('overview')" id="btn-overview" class="px-5 py-2 rounded-md text-sm font-semibold transition bg-blue-600 text-white shadow-sm">Executive Overview</button>
+                <button onclick="switchTab('defects')" id="btn-defects" class="px-5 py-2 rounded-md text-sm font-semibold text-slate-400 hover:text-white transition">Defect Deep-Dive</button>
             </div>
         </div>
     </header>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         
-        <div class="bg-[#111827] p-4 rounded-xl border border-gray-800 flex flex-wrap items-center justify-between gap-4 mb-8">
-            <div class="flex flex-wrap items-center gap-4">
+        <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow flex flex-wrap items-end justify-between gap-6 mb-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 flex-grow">
                 <div>
-                    <label class="block text-xs text-gray-400 font-semibold uppercase mb-1">3P UTR Operator</label>
-                    <select id="operator-selector" onchange="fetchDataForSelectedOperator()" class="bg-gray-900 border border-gray-700 text-white rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-blue-500">
+                    <label class="block text-xs text-slate-500 font-bold uppercase tracking-wider mb-2">3P UTR Operator</label>
+                    <select id="operator-selector" onchange="fetchDataForSelectedOperator()" class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
                         <option value="Transcorp">Transcorp</option>
                         <option value="EMX">EMX</option>
                         <option value="INDU">INDU</option>
@@ -48,49 +47,92 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs text-gray-400 font-semibold uppercase mb-1">Store Filter</label>
-                    <select id="store-selector" onchange="processAndDisplayData()" class="bg-gray-900 border border-gray-700 text-white rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-blue-500">
-                        <option value="All">All Stores</option>
+                    <label class="block text-xs text-slate-500 font-bold uppercase tracking-wider mb-2">Store Filter</label>
+                    <select id="store-selector" onchange="processAndDisplayData()" class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                        <option value="All">All Stores Matrix</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-500 font-bold uppercase tracking-wider mb-2">Timeframe Scope</label>
+                    <select id="time-selector" onchange="processAndDisplayData()" class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                        <option value="All">All-Time Cumulative</option>
+                        <option value="30">Last 30 Days</option>
+                        <option value="7">Last 7 Days</option>
                     </select>
                 </div>
             </div>
-            <div class="text-xs text-gray-500">
-                Status: <span id="sync-status" class="text-amber-400 font-semibold">Connecting...</span>
+            <div class="text-right min-w-[120px]">
+                <span class="text-xs text-slate-400 font-semibold uppercase block mb-1">Data Stream</span>
+                <span id="sync-status" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">Connecting...</span>
             </div>
         </div>
 
         <div id="tab-overview" class="space-y-8">
+            
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-[#111827] p-6 rounded-2xl neon-border-blue relative overflow-hidden">
-                    <p class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Total VOC Records</p>
-                    <h3 id="metric-total-voc" class="text-4xl font-bold text-white mt-2">--</h3>
-                    <p class="text-xs text-blue-400 mt-2">Active operator scope</p>
+                <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow relative">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Defect Volume</p>
+                    <h3 id="metric-total-voc" class="text-4xl font-bold text-slate-900 mt-2">--</h3>
+                    <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-xs font-medium text-slate-500">Active range scope</span>
+                        <span id="trend-overall" class="text-xs font-semibold px-2 py-0.5 rounded-full">--</span>
+                    </div>
                 </div>
-                <div class="bg-[#111827] p-6 rounded-2xl neon-border-green relative overflow-hidden">
-                    <p class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Unique Sites Reporting</p>
-                    <h3 id="metric-active-stores" class="text-4xl font-bold text-emerald-400 mt-2">--</h3>
-                    <p class="text-xs text-gray-500 mt-2">Darkstore footprint</p>
+
+                <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow relative">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Week-over-Week (WoW) Shift</p>
+                    <h3 id="metric-wow" class="text-4xl font-bold text-slate-900 mt-2">--</h3>
+                    <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-xs font-medium text-slate-500">Current vs Last 7 Days</span>
+                        <span id="trend-wow-sub" class="text-xs text-slate-400">Comparing periods</span>
+                    </div>
                 </div>
-                <div class="bg-[#111827] p-6 rounded-2xl neon-border-orange relative overflow-hidden">
-                    <p class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Latest Logged Issue</p>
-                    <h3 id="metric-latest-issue" class="text-lg font-semibold text-amber-500 mt-2 truncate">--</h3>
-                    <p class="text-xs text-amber-400/80 mt-2">Requires review</p>
+
+                <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow relative">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Month-over-Month (MoM) Shift</p>
+                    <h3 id="metric-mom" class="text-4xl font-bold text-slate-900 mt-2">--</h3>
+                    <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-xs font-medium text-slate-500">Current vs Last 30 Days</span>
+                        <span id="trend-mom-sub" class="text-xs text-slate-400">Comparing periods</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 card-shadow">
+                    <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4">Site Distribution Index</h3>
+                    <div id="site-distribution-bars" class="space-y-3 min-h-[150px] flex flex-col justify-center">
+                        <p class="text-sm text-slate-400 text-center">Syncing structural data analytics...</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4">Latest Operational Alert</h3>
+                        <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Raw Feedback Entry</p>
+                            <p id="metric-latest-issue" class="text-sm font-medium text-slate-700 italic">Awaiting sync pipeline...</p>
+                        </div>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-100 text-xs text-slate-400 leading-relaxed">
+                        Alert generated dynamically from the final log entry in the target operator tab matrix.
+                    </div>
                 </div>
             </div>
         </div>
 
         <div id="tab-defects" class="hidden space-y-6">
-            <div class="bg-[#111827] rounded-xl border border-gray-800 overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-800 bg-gray-900/50">
-                    <h3 class="text-lg font-semibold text-white">Granular VOC Ledger</h3>
+            <div class="bg-white rounded-xl border border-slate-200 card-shadow overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Granular Operations Ledger</h3>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
-                        <thead id="table-head" class="text-xs font-semibold uppercase text-gray-400 bg-gray-900/20">
+                        <thead id="table-head" class="text-xs font-bold uppercase text-slate-500 bg-slate-100/70 border-b border-slate-200">
                             </thead>
-                        <tbody id="data-table-body" class="text-sm divide-y divide-gray-800 text-gray-300">
+                        <tbody id="data-table-body" class="text-sm divide-y divide-slate-200 text-slate-600">
                             <tr>
-                                <td colspan="5" class="p-8 text-center text-gray-500">Loading metrics...</td>
+                                <td colspan="5" class="p-8 text-center text-slate-400">Loading tracking rows...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -101,39 +143,39 @@
     </main>
 
     <script>
-        // Linked directly to your newly created consolidated layout
         const SPREADSHEET_ID = '1A4xa3c0u7VzTvQXdp_UXxkhIuEs6YeLBb-3PUgsRBOk';
-
         let parsedHeaders = [];
         let globalRecords = [];
 
         async function fetchDataForSelectedOperator() {
             const operatorTabName = document.getElementById('operator-selector').value;
-            document.getElementById('sync-status').innerText = `Fetching ${operatorTabName} data...`;
-            document.getElementById('sync-status').className = 'text-amber-400 font-semibold';
+            const statusEl = document.getElementById('sync-status');
+            
+            statusEl.innerText = `Fetching...`;
+            statusEl.className = "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200";
 
-            // Fetches data cleanly based on your exact case-sensitive tab names
             const fetchUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(operatorTabName)}`;
 
             try {
                 const response = await fetch(fetchUrl);
-                if (!response.ok) throw new Error('Failed to stream data');
+                if (!response.ok) throw new Error('Data pipeline sync failure');
                 const csvText = await response.text();
                 
                 parseCSV(csvText);
-                document.getElementById('sync-status').innerText = `${operatorTabName} Synced`;
-                document.getElementById('sync-status').className = 'text-emerald-400 font-semibold';
+                statusEl.innerText = `Synced`;
+                statusEl.className = "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200";
                 
                 populateStoreFilter();
                 processAndDisplayData();
             } catch (error) {
                 console.error(error);
-                document.getElementById('sync-status').innerText = 'Sync Error';
-                document.getElementById('sync-status').className = 'text-red-400 font-semibold';
+                statusEl.innerText = `Sync Error`;
+                statusEl.className = "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-200";
             }
         }
 
         function parseCSV(text) {
+            // Clean lines and strip quotes
             const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
             if (lines.length === 0) {
                 globalRecords = [];
@@ -156,8 +198,7 @@
         function populateStoreFilter() {
             const storeSelector = document.getElementById('store-selector');
             const currentSelection = storeSelector.value;
-            
-            storeSelector.innerHTML = '<option value="All">All Stores</option>';
+            storeSelector.innerHTML = '<option value="All">All Stores Matrix</option>';
             
             if (globalRecords.length === 0) return;
             const storeKey = Object.keys(globalRecords[0]).find(k => k.includes('store') || k.includes('site')) || '';
@@ -170,15 +211,14 @@
                     opt.innerText = store;
                     storeSelector.appendChild(opt);
                 });
-                
-                if (uniqueStores.includes(currentSelection)) {
-                    storeSelector.value = currentSelection;
-                }
+                if (uniqueStores.includes(currentSelection)) storeSelector.value = currentSelection;
             }
         }
 
         function processAndDisplayData() {
             const selectedStore = document.getElementById('store-selector').value;
+            const selectedTimeframe = document.getElementById('time-selector').value;
+            
             if (globalRecords.length === 0) {
                 clearDashboard();
                 return;
@@ -186,48 +226,167 @@
 
             const storeKey = Object.keys(globalRecords[0]).find(k => k.includes('store') || k.includes('site')) || '';
             const issueKey = Object.keys(globalRecords[0]).find(k => k.includes('issue') || k.includes('comment') || k.includes('feedback') || k.includes('defect')) || '';
+            const dateKey = Object.keys(globalRecords[0]).find(k => k.includes('date') || k.includes('time')) || '';
 
+            // 1. Target Store Filtering
             let filtered = globalRecords;
             if (selectedStore !== 'All' && storeKey) {
                 filtered = globalRecords.filter(r => r[storeKey] === selectedStore);
             }
 
-            document.getElementById('metric-total-voc').innerText = filtered.length;
-            const uniqueStoresCount = storeKey ? [...new Set(filtered.map(r => r[storeKey]))].filter(Boolean).length : 0;
-            document.getElementById('metric-active-stores').innerText = uniqueStoresCount;
-            
-            const latestIssueText = filtered.length > 0 && issueKey ? filtered[filtered.length - 1][issueKey] : 'No recorded defects';
+            // 2. Date/Timeframe Calculations
+            const now = new Date();
+            let finalDisplayRecords = filtered;
+
+            if (dateKey && filtered.length > 0) {
+                finalDisplayRecords = filtered.filter(r => {
+                    const recordDate = new Date(r[dateKey]);
+                    if (isNaN(recordDate)) return true; // Keep if date parsing is messy
+                    
+                    if (selectedTimeframe === '30') {
+                        return (now - recordDate) / (1000 * 60 * 60 * 24) <= 30;
+                    } else if (selectedTimeframe === '7') {
+                        return (now - recordDate) / (1000 * 60 * 60 * 24) <= 7;
+                    }
+                    return true;
+                });
+            }
+
+            // 3. WoW & MoM Delta Logic
+            calculateTrends(filtered, dateKey);
+
+            // 4. Update Core UI Fields
+            document.getElementById('metric-total-voc').innerText = finalDisplayRecords.length;
+            const latestIssueText = finalDisplayRecords.length > 0 && issueKey ? finalDisplayRecords[finalDisplayRecords.length - 1][issueKey] : 'No recorded defects';
             document.getElementById('metric-latest-issue').innerText = latestIssueText;
 
+            // 5. Render Horizontal Analytics Distribution
+            renderSiteDistribution(finalDisplayRecords, storeKey);
+
+            // 6. Build Ledger Dynamic Elements
             const tableHead = document.getElementById('table-head');
-            tableHead.innerHTML = `<tr>${parsedHeaders.slice(0, 5).map(h => `<th class="p-4">${h}</th>`).join('')}</tr>`;
+            tableHead.innerHTML = `<tr>${parsedHeaders.slice(0, 5).map(h => `<th class="p-4 font-semibold text-slate-700">${h}</th>`).join('')}</tr>`;
 
             const tbody = document.getElementById('data-table-body');
-            if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-500">No matching tracking entries found</td></tr>`;
+            if (finalDisplayRecords.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400">No matching performance entries found</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = filtered.map(row => {
+            tbody.innerHTML = finalDisplayRecords.map(row => {
                 const cellValues = Object.values(row).slice(0, 5);
-                return `<tr class="hover:bg-gray-900/40 transition">
-                    ${cellValues.map((val, idx) => `<td class="p-4 ${idx === 0 ? 'text-blue-400 font-medium' : 'text-gray-300'}">${val}</td>`).join('')}
+                return `<tr class="hover:bg-slate-50 transition">
+                    ${cellValues.map((val, idx) => `<td class="p-4 ${idx === 0 ? 'text-blue-600 font-semibold' : 'text-slate-600'}">${val}</td>`).join('')}
                 </tr>`;
             }).join('');
         }
 
+        function calculateTrends(records, dateKey) {
+            if (!dateKey || records.length === 0) {
+                resetTrendUI();
+                return;
+            }
+
+            const now = new Date();
+            const oneDay = 24 * 60 * 60 * 1000;
+
+            // WoW Slices
+            const currentWeekCount = records.filter(r => (now - new Date(r[dateKey])) / oneDay <= 7).length;
+            const priorWeekCount = records.filter(r => {
+                const diff = (now - new Date(r[dateKey])) / oneDay;
+                return diff > 7 && diff <= 14;
+            }).length;
+
+            // MoM Slices
+            const currentMonthCount = records.filter(r => (now - new Date(r[dateKey])) / oneDay <= 30).length;
+            const priorMonthCount = records.filter(r => {
+                const diff = (now - new Date(r[dateKey])) / oneDay;
+                return diff > 30 && diff <= 60;
+            }).length;
+
+            displayTrendUI('metric-wow', 'trend-wow-sub', currentWeekCount, priorWeekCount, 'Vs Prior Week');
+            displayTrendUI('metric-mom', 'trend-mom-sub', currentMonthCount, priorMonthCount, 'Vs Prior Month');
+        }
+
+        function displayTrendUI(metricId, subId, current, prior, label) {
+            const el = document.getElementById(metricId);
+            const subEl = document.getElementById(subId);
+            
+            el.innerText = current;
+            
+            if (prior === 0) {
+                subEl.innerText = `${label}: Stable Baseline`;
+                subEl.className = "text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600";
+                return;
+            }
+
+            const percentChange = ((current - prior) / prior) * 100;
+            const formatted = percentChange.toFixed(1);
+
+            if (percentChange > 0) {
+                subEl.innerText = `+${formatted}% ${label}`;
+                subEl.className = "text-xs font-semibold px-2 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-100";
+            } else if (percentChange < 0) {
+                subEl.innerText = `${formatted}% ${label}`;
+                subEl.className = "text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100";
+            } else {
+                subEl.innerText = `0.0% Flat ${label}`;
+                subEl.className = "text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600";
+            }
+        }
+
+        function renderSiteDistribution(records, storeKey) {
+            const container = document.getElementById('site-distribution-bars');
+            if (!storeKey || records.length === 0) {
+                container.innerHTML = `<p class="text-sm text-slate-400 text-center">No structural distribution vectors available</p>`;
+                return;
+            }
+
+            // Calculate frequencies
+            const counts = {};
+            records.forEach(r => {
+                const store = r[storeKey] || 'Unknown';
+                counts[store] = (counts[store] || 0) + 1;
+            });
+
+            // Sort top 4
+            const sortedStores = Object.entries(counts).sort((a,b) => b[1] - a[1]).slice(0, 4);
+            const maxVal = Math.max(...sortedStores.map(s => s[1]));
+
+            container.innerHTML = sortedStores.map(([store, count]) => {
+                const pct = maxVal > 0 ? (count / maxVal) * 100 : 0;
+                return `<div class="space-y-1">
+                    <div class="flex justify-between text-xs font-semibold text-slate-600">
+                        <span>${store}</span>
+                        <span>${count} Defect Logs</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                        <div class="bg-blue-600 h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function resetTrendUI() {
+            document.getElementById('metric-wow').innerText = '--';
+            document.getElementById('metric-mom').innerText = '--';
+            document.getElementById('trend-wow-sub').innerText = 'Awaiting clean timestamp columns';
+            document.getElementById('trend-mom-sub').innerText = 'Awaiting clean timestamp columns';
+        }
+
         function clearDashboard() {
             document.getElementById('metric-total-voc').innerText = '0';
-            document.getElementById('metric-active-stores').innerText = '0';
-            document.getElementById('metric-latest-issue').innerText = 'No records';
-            document.getElementById('data-table-body').innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-500">Empty tab ledger matrix</td></tr>`;
+            resetTrendUI();
+            document.getElementById('metric-latest-issue').innerText = 'No records current';
+            document.getElementById('data-table-body').innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400">Empty workspace matrix</td></tr>`;
         }
 
         function switchTab(tabName) {
             document.getElementById('tab-overview').classList.toggle('hidden', tabName !== 'overview');
             document.getElementById('tab-defects').classList.toggle('hidden', tabName !== 'defects');
-            document.getElementById('btn-overview').className = tabName === 'overview' ? 'px-4 py-1.5 rounded-md text-sm font-medium transition bg-blue-600 text-white' : 'px-4 py-1.5 rounded-md text-sm font-medium text-gray-400 hover:text-white transition';
-            document.getElementById('btn-defects').className = tabName === 'defects' ? 'px-4 py-1.5 rounded-md text-sm font-medium transition bg-blue-600 text-white' : 'px-4 py-1.5 rounded-md text-sm font-medium text-gray-400 hover:text-white transition';
+            
+            document.getElementById('btn-overview').className = tabName === 'overview' ? 'px-5 py-2 rounded-md text-sm font-semibold transition bg-blue-600 text-white shadow-sm' : 'px-5 py-2 rounded-md text-sm font-semibold text-slate-400 hover:text-white transition';
+            document.getElementById('btn-defects').className = tabName === 'defects' ? 'px-5 py-2 rounded-md text-sm font-semibold transition bg-blue-600 text-white shadow-sm' : 'px-5 py-2 rounded-md text-sm font-semibold text-slate-400 hover:text-white transition';
         }
 
         window.onload = () => { fetchDataForSelectedOperator(); };
