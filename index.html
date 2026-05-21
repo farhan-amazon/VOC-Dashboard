@@ -33,7 +33,20 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         
         <div class="bg-[#111827] p-4 rounded-xl border border-gray-800 flex flex-wrap items-center justify-between gap-4 mb-8">
-            <div class="flex items-center space-x-4">
+            <div class="flex flex-wrap items-center gap-4">
+                <div>
+                    <label class="block text-xs text-gray-400 font-semibold uppercase mb-1">3P UTR Operator</label>
+                    <select id="operator-selector" onchange="fetchDataForSelectedOperator()" class="bg-gray-900 border border-gray-700 text-white rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-blue-500">
+                        <option value="Transcorp">Transcorp</option>
+                        <option value="EMX">EMX</option>
+                        <option value="INDU">INDU</option>
+                        <option value="Jeebly">Jeebly</option>
+                        <option value="GWC">GWC</option>
+                        <option value="GMG">GMG</option>
+                        <option value="Time Express">Time Express</option>
+                        <option value="ENOC">ENOC</option>
+                    </select>
+                </div>
                 <div>
                     <label class="block text-xs text-gray-400 font-semibold uppercase mb-1">Store Filter</label>
                     <select id="store-selector" onchange="processAndDisplayData()" class="bg-gray-900 border border-gray-700 text-white rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-blue-500">
@@ -42,26 +55,26 @@
                 </div>
             </div>
             <div class="text-xs text-gray-500">
-                Data Connection: <span id="sync-status" class="text-amber-400 font-semibold">Connecting to Google Sheet...</span>
+                Status: <span id="sync-status" class="text-amber-400 font-semibold">Connecting...</span>
             </div>
         </div>
 
         <div id="tab-overview" class="space-y-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-[#111827] p-6 rounded-2xl neon-border-blue relative overflow-hidden group">
+                <div class="bg-[#111827] p-6 rounded-2xl neon-border-blue relative overflow-hidden">
                     <p class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Total VOC Records</p>
                     <h3 id="metric-total-voc" class="text-4xl font-bold text-white mt-2">--</h3>
-                    <p class="text-xs text-blue-400 mt-2 flex items-center">Live feed calculation</p>
+                    <p class="text-xs text-blue-400 mt-2">Active operator scope</p>
                 </div>
-                <div class="bg-[#111827] p-6 rounded-2xl neon-border-green relative overflow-hidden group">
-                    <p class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Unique Stores Reporting</p>
+                <div class="bg-[#111827] p-6 rounded-2xl neon-border-green relative overflow-hidden">
+                    <p class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Unique Sites Reporting</p>
                     <h3 id="metric-active-stores" class="text-4xl font-bold text-emerald-400 mt-2">--</h3>
-                    <p class="text-xs text-gray-500 mt-2">Active darkstore footprint</p>
+                    <p class="text-xs text-gray-500 mt-2">Darkstore footprint</p>
                 </div>
-                <div class="bg-[#111827] p-6 rounded-2xl neon-border-orange relative overflow-hidden group">
+                <div class="bg-[#111827] p-6 rounded-2xl neon-border-orange relative overflow-hidden">
                     <p class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Latest Logged Issue</p>
                     <h3 id="metric-latest-issue" class="text-lg font-semibold text-amber-500 mt-2 truncate">--</h3>
-                    <p class="text-xs text-amber-400/80 mt-2">Requires review and response</p>
+                    <p class="text-xs text-amber-400/80 mt-2">Requires review</p>
                 </div>
             </div>
         </div>
@@ -69,7 +82,7 @@
         <div id="tab-defects" class="hidden space-y-6">
             <div class="bg-[#111827] rounded-xl border border-gray-800 overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-800 bg-gray-900/50">
-                    <h3 class="text-lg font-semibold text-white">Live VOC Ledger - "Daily VOCs"</h3>
+                    <h3 class="text-lg font-semibold text-white">Granular VOC Ledger</h3>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
@@ -77,7 +90,7 @@
                             </thead>
                         <tbody id="data-table-body" class="text-sm divide-y divide-gray-800 text-gray-300">
                             <tr>
-                                <td colspan="4" class="p-8 text-center text-gray-500">Loading live spreadsheet records...</td>
+                                <td colspan="5" class="p-8 text-center text-gray-500">Loading metrics...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -88,20 +101,27 @@
     </main>
 
     <script>
-        // Live link connected directly to the Daily VOCs publication matrix
-const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRnz7Ypt9a2KVqhQsU2s8qxg6Wf7qtvAwAPOsRhoSWxnwILyHQXmW2W66TsaNWA2WO7vdUG55MPIDTf/pub?gid=0&single=true&output=csv';
+        // Linked directly to your newly created consolidated layout
+        const SPREADSHEET_ID = '1A4xa3c0u7VzTvQXdp_UXxkhIuEs6YeLBb-3PUgsRBOk';
 
         let parsedHeaders = [];
         let globalRecords = [];
 
-        async function fetchSpreadsheetData() {
+        async function fetchDataForSelectedOperator() {
+            const operatorTabName = document.getElementById('operator-selector').value;
+            document.getElementById('sync-status').innerText = `Fetching ${operatorTabName} data...`;
+            document.getElementById('sync-status').className = 'text-amber-400 font-semibold';
+
+            // Fetches data cleanly based on your exact case-sensitive tab names
+            const fetchUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(operatorTabName)}`;
+
             try {
-                const response = await fetch(GOOGLE_SHEET_CSV_URL);
-                if (!response.ok) throw new Error('Network error fetching sheet data');
-                const dataText = await response.text();
+                const response = await fetch(fetchUrl);
+                if (!response.ok) throw new Error('Failed to stream data');
+                const csvText = await response.text();
                 
-                parseCSV(dataText);
-                document.getElementById('sync-status').innerText = 'Synced Successfully';
+                parseCSV(csvText);
+                document.getElementById('sync-status').innerText = `${operatorTabName} Synced`;
                 document.getElementById('sync-status').className = 'text-emerald-400 font-semibold';
                 
                 populateStoreFilter();
@@ -115,16 +135,19 @@ const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR
 
         function parseCSV(text) {
             const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-            if (lines.length === 0) return;
+            if (lines.length === 0) {
+                globalRecords = [];
+                parsedHeaders = [];
+                return;
+            }
 
-            // Simple CSV line parser split by comma
-            parsedHeaders = lines[0].split(',').map(h => h.replace(/^"|"$/g, ''));
+            parsedHeaders = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim());
             
             globalRecords = lines.slice(1).map(line => {
-                const cells = line.split(',').map(c => c.replace(/^"|"$/g, ''));
+                const cells = line.split(',').map(c => c.replace(/^"|"$/g, '').trim());
                 let rowObj = {};
                 parsedHeaders.forEach((header, index) => {
-                    rowObj[header.toLowerCase().trim()] = cells[index] || '';
+                    rowObj[header.toLowerCase()] = cells[index] || '';
                 });
                 return rowObj;
             });
@@ -132,8 +155,12 @@ const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR
 
         function populateStoreFilter() {
             const storeSelector = document.getElementById('store-selector');
-            // Looks for variations of store code column tags dynamically
-            const storeKey = Object.keys(globalRecords[0] || {}).find(k => k.includes('store') || k.includes('site')) || '';
+            const currentSelection = storeSelector.value;
+            
+            storeSelector.innerHTML = '<option value="All">All Stores</option>';
+            
+            if (globalRecords.length === 0) return;
+            const storeKey = Object.keys(globalRecords[0]).find(k => k.includes('store') || k.includes('site')) || '';
             
             if (storeKey) {
                 const uniqueStores = [...new Set(globalRecords.map(r => r[storeKey]))].filter(Boolean).sort();
@@ -143,36 +170,41 @@ const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR
                     opt.innerText = store;
                     storeSelector.appendChild(opt);
                 });
+                
+                if (uniqueStores.includes(currentSelection)) {
+                    storeSelector.value = currentSelection;
+                }
             }
         }
 
         function processAndDisplayData() {
             const selectedStore = document.getElementById('store-selector').value;
-            const storeKey = Object.keys(globalRecords[0] || {}).find(k => k.includes('store') || k.includes('site')) || '';
-            const issueKey = Object.keys(globalRecords[0] || {}).find(k => k.includes('issue') || k.includes('comment') || k.includes('feedback')) || '';
+            if (globalRecords.length === 0) {
+                clearDashboard();
+                return;
+            }
+
+            const storeKey = Object.keys(globalRecords[0]).find(k => k.includes('store') || k.includes('site')) || '';
+            const issueKey = Object.keys(globalRecords[0]).find(k => k.includes('issue') || k.includes('comment') || k.includes('feedback') || k.includes('defect')) || '';
 
             let filtered = globalRecords;
             if (selectedStore !== 'All' && storeKey) {
                 filtered = globalRecords.filter(r => r[storeKey] === selectedStore);
             }
 
-            // Calculate Metrics
             document.getElementById('metric-total-voc').innerText = filtered.length;
-            
             const uniqueStoresCount = storeKey ? [...new Set(filtered.map(r => r[storeKey]))].filter(Boolean).length : 0;
             document.getElementById('metric-active-stores').innerText = uniqueStoresCount;
-
-            const latestIssueText = filtered.length > 0 && issueKey ? filtered[filtered.length - 1][issueKey] : 'No recorded issues';
+            
+            const latestIssueText = filtered.length > 0 && issueKey ? filtered[filtered.length - 1][issueKey] : 'No recorded defects';
             document.getElementById('metric-latest-issue').innerText = latestIssueText;
 
-            // Build dynamic table headings matching your spreadsheet layout
             const tableHead = document.getElementById('table-head');
             tableHead.innerHTML = `<tr>${parsedHeaders.slice(0, 5).map(h => `<th class="p-4">${h}</th>`).join('')}</tr>`;
 
-            // Build table rows
             const tbody = document.getElementById('data-table-body');
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-500">No layout match found</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-500">No matching tracking entries found</td></tr>`;
                 return;
             }
 
@@ -184,15 +216,21 @@ const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR
             }).join('');
         }
 
+        function clearDashboard() {
+            document.getElementById('metric-total-voc').innerText = '0';
+            document.getElementById('metric-active-stores').innerText = '0';
+            document.getElementById('metric-latest-issue').innerText = 'No records';
+            document.getElementById('data-table-body').innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-500">Empty tab ledger matrix</td></tr>`;
+        }
+
         function switchTab(tabName) {
             document.getElementById('tab-overview').classList.toggle('hidden', tabName !== 'overview');
             document.getElementById('tab-defects').classList.toggle('hidden', tabName !== 'defects');
-            
             document.getElementById('btn-overview').className = tabName === 'overview' ? 'px-4 py-1.5 rounded-md text-sm font-medium transition bg-blue-600 text-white' : 'px-4 py-1.5 rounded-md text-sm font-medium text-gray-400 hover:text-white transition';
             document.getElementById('btn-defects').className = tabName === 'defects' ? 'px-4 py-1.5 rounded-md text-sm font-medium transition bg-blue-600 text-white' : 'px-4 py-1.5 rounded-md text-sm font-medium text-gray-400 hover:text-white transition';
         }
 
-        window.onload = () => { fetchSpreadsheetData(); };
+        window.onload = () => { fetchDataForSelectedOperator(); };
     </script>
 </body>
 </html>
