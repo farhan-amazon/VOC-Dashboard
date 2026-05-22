@@ -1,102 +1,519 @@
-async function fetchData() {
-    const response = await fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vQK9aXwzV8gK6R9o3qY5W4x8Drk4r9Qn4WZzP7xG6r8qR3Jhz52uG1p3O7H4H0n5B2Hg7c5pXy5W8h3Jq/pub?output=csv');
-    const data = await response.text();
-    return parseCSV(data);
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANow VOC Command Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #161d31; 
+            color: #b4c1d9; 
+        }
+        .bg-panel { background-color: #222b45; }
+        .bg-dark-input { background-color: #192038; }
+        .text-lime-volt { color: #ccff00; }
+        .bg-lime-volt { background-color: #ccff00; }
+        .border-lime-volt { border-color: #ccff00; }
+        .card-shadow { box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.25); }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #161d31; }
+        ::-webkit-scrollbar-thumb { background: #2e3b62; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ccff00; }
+    </style>
+</head>
+<body class="min-h-screen pb-12">
 
-function parseCSV(data) {
-    const rows = data.split('\n').map(row => row.split(','));
-    return rows;
-}
+    <header class="bg-[#192038] border-b border-[#222b45] text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="h-4 w-4 rounded-full bg-lime-volt shadow-[0_0_12px_#ccff00]"></div>
+                <div>
+                    <span class="text-xs font-bold tracking-widest text-lime-volt uppercase block">Strategic Overview</span>
+                    <h1 class="text-xl font-bold tracking-tight text-white">ANow VOC Operational Command Center</h1>
+                </div>
+            </div>
+            <div class="flex space-x-1 bg-[#161d31] p-1 rounded-lg border border-[#2e3b62]">
+                <button onclick="switchTab('overview')" id="btn-overview" class="px-5 py-2 rounded-md text-sm font-semibold transition bg-lime-volt text-[#161d31] shadow-sm">Dashboard View</button>
+                <button onclick="switchTab('defects')" id="btn-defects" class="px-5 py-2 rounded-md text-sm font-semibold text-slate-400 hover:text-white transition">Data Ledger</button>
+            </div>
+        </div>
+    </header>
 
-let rawData = [];
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        
+        <div class="bg-panel p-6 rounded-xl border border-[#2e3b62] card-shadow mb-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+                
+                <div>
+                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">1. 3P Operator</label>
+                    <select id="operator-selector" onchange="fetchDataForSelectedOperator()" class="w-full bg-dark-input border border-[#2e3b62] text-white rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-lime-volt outline-none">
+                        <option value="Transcorp">Transcorp</option>
+                        <option value="EMX">EMX</option>
+                        <option value="INDU">INDU</option>
+                        <option value="Jeebly">Jeebly</option>
+                        <option value="GWC">GWC</option>
+                        <option value="GMG">GMG</option>
+                        <option value="Time Express">Time Express</option>
+                        <option value="ENOC">ENOC</option>
+                    </select>
+                </div>
 
-async function initialize() {
-    rawData = await fetchData();
-    populateFilters();
-    updateCharts();
-}
+                <div>
+                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">2. Store Code</label>
+                    <select id="store-selector" onchange="processAndDisplayData()" class="w-full bg-dark-input border border-[#2e3b62] text-white rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-lime-volt outline-none">
+                        <option value="All">All Stores</option>
+                    </select>
+                </div>
 
-function populateFilters() {
-    const operatorSelect = document.getElementById('operator');
-    const storeCodeSelect = document.getElementById('storeCode');
-    const complaintSelect = document.getElementById('complaint');
-    const rcaCategorySelect = document.getElementById('rcaCategory');
+                <div>
+                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">3. Date Scope</label>
+                    <select id="date-selector" onchange="processAndDisplayData()" class="w-full bg-dark-input border border-[#2e3b62] text-white rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-lime-volt outline-none">
+                        <option value="All">All Dates</option>
+                        <option value="Today">Today</option>
+                        <option value="Yesterday">Yesterday</option>
+                    </select>
+                </div>
 
-    // Populate filters based on unique values in the dataset
-    // Assuming first row is headers
-    const operators = [...new Set(rawData.slice(1).map(row => row[0]))];
-    const storeCodes = [...new Set(rawData.slice(1).map(row => row[1]))];
-    const complaints = [...new Set(rawData.slice(1).map(row => row[6]))];
-    const rcaCategories = [...new Set(rawData.slice(1).map(row => row[8]))];
+                <div>
+                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">4. Week Filter</label>
+                    <select id="week-selector" onchange="processAndDisplayData()" class="w-full bg-dark-input border border-[#2e3b62] text-white rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-lime-volt outline-none">
+                        <option value="All">All Weeks</option>
+                    </select>
+                </div>
 
-    operators.forEach(op => operatorSelect.add(new Option(op, op)));
-    storeCodes.forEach(code => storeCodeSelect.add(new Option(code, code)));
-    complaints.forEach(comp => complaintSelect.add(new Option(comp, comp)));
-    rcaCategories.forEach(cat => rcaCategorySelect.add(new Option(cat, cat)));
-}
+                <div>
+                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">5. Complaint Type</label>
+                    <select id="complaint-selector" onchange="processAndDisplayData()" class="w-full bg-dark-input border border-[#2e3b62] text-white rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-lime-volt outline-none">
+                        <option value="All">All Complaints</option>
+                    </select>
+                </div>
 
-function filterData() {
-    const operator = document.getElementById('operator').value;
-    const storeCode = document.getElementById('storeCode').value;
-    const date = document.getElementById('date').value;
-    const week = document.getElementById('week').value;
-    const complaint = document.getElementById('complaint').value;
-    const rcaCategory = document.getElementById('rcaCategory').value;
+                <div>
+                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">6. RCA Category</label>
+                    <select id="rca-selector" onchange="processAndDisplayData()" class="w-full bg-dark-input border border-[#2e3b62] text-white rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-lime-volt outline-none">
+                        <option value="All">All Categories</option>
+                    </select>
+                </div>
 
-    return rawData.filter(row => {
-        return (!operator || row[0] === operator) &&
-               (!storeCode || row[1] === storeCode) &&
-               (!date || row[2] === date) &&
-               (!week || row[3] == week) &&
-               (!complaint || row[6] === complaint) &&
-               (!rcaCategory || row[8] === rcaCategory);
-    });
-}
+            </div>
+            <div class="mt-4 pt-4 border-t border-[#2e3b62] flex justify-between items-center text-xs">
+                <span class="text-slate-400">Operational Matrix Sync Status:</span>
+                <span id="sync-status" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#161d31] text-lime-volt border border-[#2e3b62]">Initializing...</span>
+            </div>
+        </div>
 
-function updateCharts() {
-    const filteredData = filterData();
-    
-    // Set up data for the charts
-    // Example: Bar Chart (you can customize based on your needs)
-    const labels = filteredData.map(row => row[1]); // Change as needed
-    const values = filteredData.map(row => row[4]); // Change as needed
+        <div id="tab-overview" class="space-y-8">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-panel p-6 rounded-xl border border-[#2e3b62] card-shadow relative overflow-hidden">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Week-over-Week (WoW) Shift</p>
+                    <h3 id="metric-wow" class="text-4xl font-bold text-white mt-2">--</h3>
+                    <div class="mt-4 pt-4 border-t border-[#2e3b62] flex items-center justify-between">
+                        <span class="text-xs font-medium text-slate-400">Current 7 Days vs Prior Window</span>
+                        <span id="trend-wow-sub" class="text-[11px] font-bold px-2 py-0.5 rounded bg-[#161d31]">--</span>
+                    </div>
+                </div>
 
-    const barChartCtx = document.getElementById('barChart').getContext('2d');
-    const lineChartCtx = document.getElementById('lineChart').getContext('2d');
-    const pieChartCtx = document.getElementById('pieChart').getContext('2d');
+                <div class="bg-panel p-6 rounded-xl border border-[#2e3b62] card-shadow relative overflow-hidden">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Month-over-Month (MoM) Shift</p>
+                    <h3 id="metric-mom" class="text-4xl font-bold text-white mt-2">--</h3>
+                    <div class="mt-4 pt-4 border-t border-[#2e3b62] flex items-center justify-between">
+                        <span class="text-xs font-medium text-slate-400">Current 30 Days vs Prior Window</span>
+                        <span id="trend-mom-sub" class="text-[11px] font-bold px-2 py-0.5 rounded bg-[#161d31]">--</span>
+                    </div>
+                </div>
+            </div>
 
-    new Chart(barChartCtx, {
-        type: 'bar',
-        {
-            labels: labels,
-            datasets: [{
-                label: 'Complaints Overview',
-                values,
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            },
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: function(tooltipItem) {
-                            return `Complaints: ${tooltipItem.raw}`;
-                        }
-                    }
-                }
+            <div class="bg-panel p-6 rounded-xl border border-[#2e3b62] card-shadow">
+                <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-6 border-l-2 border-lime-volt pl-2">Strategic KPI Summary Index</h3>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-[#192038] p-5 rounded-lg border border-[#2e3b62] flex flex-col justify-between">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total VOC Count</span>
+                        <div class="flex items-baseline justify-between mt-2">
+                            <span id="kpi-total-voc" class="text-3xl font-bold text-white">0</span>
+                            <span class="text-[10px] text-lime-volt bg-[#161d31] px-1.5 py-0.5 rounded font-medium">Filtered</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#192038] p-5 rounded-lg border border-[#2e3b62] flex flex-col justify-between">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Ops Controllable - QC Miss</span>
+                        <div class="flex items-baseline justify-between mt-2">
+                            <span id="kpi-qc-miss" class="text-3xl font-bold text-white">0</span>
+                            <span id="pct-qc-miss" class="text-xs text-slate-400 font-medium">0% of total</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#192038] p-5 rounded-lg border border-[#2e3b62] flex flex-col justify-between">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Ops Controllable - Picker Mistakes</span>
+                        <div class="flex items-baseline justify-between mt-2">
+                            <span id="kpi-picker-mistakes" class="text-3xl font-bold text-white">0</span>
+                            <span id="pct-picker-mistakes" class="text-xs text-slate-400 font-medium">0% of total</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#192038] p-5 rounded-lg border border-[#2e3b62] flex flex-col justify-between">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Catalogue Issues</span>
+                        <div class="flex items-baseline justify-between mt-2">
+                            <span id="kpi-catalogue-issues" class="text-3xl font-bold text-white">0</span>
+                            <span id="pct-catalogue-issues" class="text-xs text-slate-400 font-medium">0% of total</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-panel p-6 rounded-xl border border-[#2e3b62] card-shadow">
+                <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-5 border-l-2 border-lime-volt pl-2">Top Defect Concentrations by Store Code</h3>
+                <div id="site-distribution-bars" class="space-y-4">
+                    <p class="text-sm text-slate-400 text-center">Awaiting data validation sync...</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-defects" class="hidden space-y-6">
+            <div class="bg-panel rounded-xl border border-[#2e3b62] card-shadow overflow-hidden">
+                <div class="px-6 py-4 border-b border-[#2e3b62] bg-[#192038]">
+                    <h3 class="text-xs font-bold text-white uppercase tracking-wider">Granular Operations Ledger (Newest Rows First)</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead id="table-head" class="text-xs font-bold uppercase text-slate-300 bg-[#161d31] border-b border-[#2e3b62]">
+                            </thead>
+                        <tbody id="data-table-body" class="text-sm divide-y divide-[#2e3b62] text-slate-300">
+                            <tr>
+                                <td colspan="10" class="p-8 text-center text-slate-400">Awaiting stream allocation...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const SPREADSHEET_ID = '1A4xa3c0u7VzTvQXdp_UXxkhIuEs6YeLBb-3PUgsRBOk';
+        let parsedHeaders = [];
+        let globalRecords = [];
+
+        // Global key tracking indexes to map filters directly to columns
+        let storeKeyIdx = 0;      // Column A target
+        let dateKeyIdx = 2;       // Column C target
+        let weekKeyIdx = 3;       // Column D target
+        let complaintKeyIdx = 6;  // Column G target
+        let rcaKeyIdx = 8;        // Column I target
+
+        async function fetchDataForSelectedOperator() {
+            const operatorTabName = document.getElementById('operator-selector').value;
+            const statusEl = document.getElementById('sync-status');
+            
+            statusEl.innerText = `Connecting Stream...`;
+            statusEl.className = "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#161d31] text-amber-400 border border-[#2e3b62]";
+
+            const fetchUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(operatorTabName)}`;
+
+            try {
+                const response = await fetch(fetchUrl);
+                if (!response.ok) throw new Error('Data sync failure');
+                const csvText = await response.text();
+                
+                parseCSV(csvText);
+                statusEl.innerText = `${operatorTabName.toUpperCase()} PIPELINE ACTIVE`;
+                statusEl.className = "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#161d31] text-lime-volt border border-[#2e3b62]";
+                
+                mapDynamicHeaderIndices();
+                populateFilterDropdowns();
+                processAndDisplayData();
+            } catch (error) {
+                console.error(error);
+                statusEl.innerText = `SYNC FAILURE`;
+                statusEl.className = "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#161d31] text-red-500 border border-[#2e3b62]";
             }
         }
-    });
 
-    // You can create more charts (lineChart, pieChart) similarly
-}
+        function parseCSV(text) {
+            // Regex to parse CSV lines while ignoring internal commas inside double quotes safely
+            const regex = /,(?=(?:(?:[^"]*"){2})*[^"]*$)/;
+            const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+            
+            if (lines.length === 0) {
+                globalRecords = [];
+                parsedHeaders = [];
+                return;
+            }
 
-initialize();
+            parsedHeaders = lines[0].split(regex).map(h => h.replace(/^"|"$/g, '').trim());
+            
+            globalRecords = lines.slice(1).map(line => {
+                return line.split(regex).map(c => c.replace(/^"|"$/g, '').trim());
+            });
+        }
+
+        function mapDynamicHeaderIndices() {
+            if (parsedHeaders.length === 0) return;
+
+            // Normalize names to prevent mismatching from casing or spaces
+            const normHeaders = parsedHeaders.map(h => h.toLowerCase().replace(/[^a-z0-9]/g, ''));
+
+            // Find match by keyword string fallback to exact column assignments if gviz indices warp
+            const findIndex = (keywords, defaultFallback) => {
+                const found = normHeaders.findIndex(h => keywords.some(kw => h.includes(kw)));
+                return found !== -1 ? found : defaultFallback;
+            };
+
+            storeKeyIdx = findIndex(['store', 'site', 'hub', 'storecode'], 0);        // Col A
+            dateKeyIdx = findIndex(['date', 'time', 'timestamp'], 2);                // Col C
+            weekKeyIdx = findIndex(['week', 'wk'], 3);                               // Col D
+            complaintKeyIdx = findIndex(['complaint', 'defect', 'type'], 6);         // Col G
+            rcaKeyIdx = findIndex(['rca', 'root', 'category'], 8);                   // Col I
+        }
+
+        function populateFilterDropdowns() {
+            setupDropdownIndexed('store-selector', storeKeyIdx, 'All Stores');
+            setupDropdownIndexed('week-selector', weekKeyIdx, 'All Weeks');
+            setupDropdownIndexed('complaint-selector', complaintKeyIdx, 'All Complaints');
+            setupDropdownIndexed('rca-selector', rcaKeyIdx, 'All Categories');
+        }
+
+        function setupDropdownIndexed(elementId, colIdx, defaultText) {
+            const selector = document.getElementById(elementId);
+            const currentSelection = selector.value;
+            selector.innerHTML = `<option value="All">${defaultText}</option>`;
+            
+            if (globalRecords.length === 0 || colIdx >= parsedHeaders.length) return;
+            
+            const uniqueValues = [...new Set(globalRecords.map(r => r[colIdx]))].filter(Boolean).sort();
+            uniqueValues.forEach(val => {
+                const opt = document.createElement('option');
+                opt.value = val;
+                opt.innerText = val;
+                selector.appendChild(opt);
+            });
+            if (uniqueValues.includes(currentSelection)) selector.value = currentSelection;
+        }
+
+        function parseFlexibleDate(dateStr) {
+            if (!dateStr) return new Date(NaN);
+            let cleanStr = dateStr.replace(/"/g, '').trim();
+            if (/^\d{4}-\d{2}-\d{2}/.test(cleanStr)) return new Date(cleanStr);
+            
+            const parts = cleanStr.split(/[-/]/);
+            if (parts.length >= 3) {
+                let day = parseInt(parts[0], 10);
+                let month = parseInt(parts[1], 10) - 1;
+                let year = parseInt(parts[2], 10);
+                if (year < 100) year += 2000;
+                if (month > 11) {
+                    let temp = day; day = month + 1; month = temp - 1;
+                }
+                return new Date(year, month, day);
+            }
+            return new Date(cleanStr);
+        }
+
+        function processAndDisplayData() {
+            if (globalRecords.length === 0) {
+                clearDashboard();
+                return;
+            }
+
+            const fStore = document.getElementById('store-selector').value;
+            const fDate = document.getElementById('date-selector').value;
+            const fWeek = document.getElementById('week-selector').value;
+            const fComplaint = document.getElementById('complaint-selector').value;
+            const fRca = document.getElementById('rca-selector').value;
+
+            // Strategic Filtration Pipeline
+            let displayRecords = globalRecords.filter(r => {
+                if (fStore !== 'All' && r[storeKeyIdx] !== fStore) return false;
+                if (fWeek !== 'All' && r[weekKeyIdx] !== fWeek) return false;
+                if (fComplaint !== 'All' && r[complaintKeyIdx] !== fComplaint) return false;
+                if (fRca !== 'All' && r[rcaKeyIdx] !== fRca) return false;
+                
+                if (fDate !== 'All' && dateKeyIdx < r.length) {
+                    const recordDate = parseFlexibleDate(r[dateKeyIdx]);
+                    if (isNaN(recordDate.getTime())) return false;
+                    
+                    const todayStr = new Date().toDateString();
+                    const recordDateStr = recordDate.toDateString();
+                    
+                    if (fDate === 'Today' && recordDateStr !== todayStr) return false;
+                    if (fDate === 'Yesterday') {
+                        const yesterday = new Date();
+                        yesterday.setDate(yesterday.getDate() - 1);
+                        if (recordDateStr !== yesterday.toDateString()) return false;
+                    }
+                }
+                return true;
+            });
+
+            // 1. Trend Deltas (calculated using store base filter scope)
+            let storeFilteredBase = globalRecords;
+            if (fStore !== 'All') {
+                storeFilteredBase = globalRecords.filter(r => r[storeKeyIdx] === fStore);
+            }
+            calculateTrends(storeFilteredBase);
+
+            // 2. Generate Strategic Performance Metrics Summary Index
+            calculateStrategicKPIs(displayRecords);
+
+            // 3. Render Horizontal Distribution Bars
+            renderSiteDistribution(displayRecords);
+
+            // 4. Construct Data Ledger Matrix Viewports
+            const tableHead = document.getElementById('table-head');
+            tableHead.innerHTML = `<tr>${parsedHeaders.map(h => `<th class="p-4 font-semibold text-slate-300 border-b border-[#2e3b62]">${h}</th>`).join('')}</tr>`;
+
+            const tbody = document.getElementById('data-table-body');
+            if (displayRecords.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="${parsedHeaders.length}" class="p-8 text-center text-slate-400">No matching tracking data located.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = displayRecords.slice(-100).map(row => {
+                return `<tr class="hover:bg-[#192038] transition border-b border-[#2e3b62]">
+                    ${row.map((val, idx) => `<td class="p-4 ${idx === storeKeyIdx ? 'text-lime-volt font-semibold' : 'text-slate-300'}">${val}</td>`).join('')}
+                </tr>`;
+            }).reverse().join('');
+        }
+
+        function calculateStrategicKPIs(records) {
+            const totalCount = records.length;
+            document.getElementById('kpi-total-voc').innerText = totalCount;
+
+            let qcMissCount = 0;
+            let pickerMistakesCount = 0;
+            let catalogueIssuesCount = 0;
+
+            records.forEach(r => {
+                const rcaVal = (r[rcaKeyIdx] || '').toLowerCase().trim();
+                const complaintVal = (r[complaintKeyIdx] || '').toLowerCase().trim();
+
+                // Precise condition matching to group your tracking issues perfectly
+                if (rcaVal.includes('qc miss') || rcaVal.includes('qc_miss')) qcMissCount++;
+                if (rcaVal.includes('picker') || rcaVal.includes('picking') || rcaVal.includes('mistake')) pickerMistakesCount++;
+                if (complaintVal.includes('catalogue') || complaintVal.includes('catalog') || rcaVal.includes('catalogue')) catalogueIssuesCount++;
+            });
+
+            document.getElementById('kpi-qc-miss').innerText = qcMissCount;
+            document.getElementById('kpi-picker-mistakes').innerText = pickerMistakesCount;
+            document.getElementById('kpi-catalogue-issues').innerText = catalogueIssuesCount;
+
+            const formatPct = (count) => totalCount > 0 ? `${((count / totalCount) * 100).toFixed(1)}% of total` : '0.0% of total';
+            document.getElementById('pct-qc-miss').innerText = formatPct(qcMissCount);
+            document.getElementById('pct-picker-mistakes').innerText = formatPct(pickerMistakesCount);
+            document.getElementById('pct-catalogue-issues').innerText = formatPct(catalogueIssuesCount);
+        }
+
+        function calculateTrends(records) {
+            if (records.length === 0 || dateKeyIdx >= parsedHeaders.length) {
+                resetTrendUI();
+                return;
+            }
+            const now = new Date();
+            const oneDay = 24 * 60 * 60 * 1000;
+
+            const currentWeekCount = records.filter(r => (now - parseFlexibleDate(r[dateKeyIdx])) / oneDay <= 7).length;
+            const priorWeekCount = records.filter(r => {
+                const diff = (now - parseFlexibleDate(r[dateKeyIdx])) / oneDay;
+                return diff > 7 && diff <= 14;
+            }).length;
+
+            const currentMonthCount = records.filter(r => (now - parseFlexibleDate(r[dateKeyIdx])) / oneDay <= 30).length;
+            const priorMonthCount = records.filter(r => {
+                const diff = (now - parseFlexibleDate(r[dateKeyIdx])) / oneDay;
+                return diff > 30 && diff <= 60;
+            }).length;
+
+            displayTrendUI('metric-wow', 'trend-wow-sub', currentWeekCount, priorWeekCount);
+            displayTrendUI('metric-mom', 'trend-mom-sub', currentMonthCount, priorMonthCount);
+        }
+
+        function displayTrendUI(metricId, subId, current, prior) {
+            const el = document.getElementById(metricId);
+            const subEl = document.getElementById(subId);
+            el.innerText = current;
+            
+            if (prior === 0) {
+                subEl.innerText = `INITIAL BASELINE`;
+                subEl.className = "text-[11px] font-bold px-2 py-0.5 rounded bg-[#161d31] text-slate-400";
+                return;
+            }
+
+            const percentChange = ((current - prior) / prior) * 100;
+            const formatted = percentChange.toFixed(1);
+
+            if (percentChange > 0) {
+                subEl.innerText = `+${formatted}% VOLUME SPIKE`;
+                subEl.className = "text-[11px] font-bold px-2 py-0.5 rounded bg-[#161d31] text-red-400";
+            } else if (percentChange < 0) {
+                subEl.innerText = `${formatted}% DEFECT REDUCTION`;
+                subEl.className = "text-[11px] font-bold px-2 py-0.5 rounded bg-[#161d31] text-lime-volt";
+            } else {
+                subEl.innerText = `0.0% STABLE VARIANCE`;
+                subEl.className = "text-[11px] font-bold px-2 py-0.5 rounded bg-[#161d31] text-slate-400";
+            }
+        }
+
+        function renderSiteDistribution(records) {
+            const container = document.getElementById('site-distribution-bars');
+            if (records.length === 0) {
+                container.innerHTML = `<p class="text-sm text-slate-400 text-center">No location metrics available.</p>`;
+                return;
+            }
+
+            const counts = {};
+            records.forEach(r => {
+                const store = r[storeKeyIdx] || 'Unknown Hub';
+                counts[store] = (counts[store] || 0) + 1;
+            });
+
+            const sortedStores = Object.entries(counts).sort((a,b) => b[1] - a[1]).slice(0, 4);
+            const maxVal = Math.max(...sortedStores.map(s => s[1]));
+
+            container.innerHTML = sortedStores.map(([store, count]) => {
+                const pct = maxVal > 0 ? (count / maxVal) * 100 : 0;
+                return `<div class="space-y-1">
+                    <div class="flex justify-between text-xs font-semibold text-slate-300">
+                        <span>Store: ${store}</span>
+                        <span class="text-lime-volt">${count} Incidents</span>
+                    </div>
+                    <div class="w-full bg-[#161d31] h-3 rounded-full overflow-hidden border border-[#2e3b62]">
+                        <div class="bg-lime-volt h-full rounded-full transition-all duration-700" style="width: ${pct}%"></div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function resetTrendUI() {
+            document.getElementById('metric-wow').innerText = '--';
+            document.getElementById('metric-mom').innerText = '--';
+            document.getElementById('trend-wow-sub').innerText = 'NO DATA';
+            document.getElementById('trend-mom-sub').innerText = 'NO DATA';
+        }
+
+        function clearDashboard() {
+            document.getElementById('kpi-total-voc').innerText = '0';
+            document.getElementById('kpi-qc-miss').innerText = '0';
+            document.getElementById('kpi-picker-mistakes').innerText = '0';
+            document.getElementById('kpi-catalogue-issues').innerText = '0';
+            resetTrendUI();
+            document.getElementById('data-table-body').innerHTML = `<tr><td colspan="10" class="p-8 text-center text-slate-400">Empty workspace matrix.</td></tr>`;
+        }
+
+        function switchTab(tabName) {
+            document.getElementById('tab-overview').classList.toggle('hidden', tabName !== 'overview');
+            document.getElementById('tab-defects').classList.toggle('hidden', tabName !== 'defects');
+            
+            document.getElementById('btn-overview').className = tabName === 'overview' ? 'px-5 py-2 rounded-md text-sm font-semibold transition bg-lime-volt text-[#161d31] shadow-sm' : 'px-5 py-2 rounded-md text-sm font-semibold text-slate-400 hover:text-white transition';
+            document.getElementById('btn-defects').className = tabName === 'defects' ? 'px-5 py-2 rounded-md text-sm font-semibold transition bg-lime-volt text-[#161d31] shadow-sm' : 'px-5 py-2 rounded-md text-sm font-semibold text-slate-400 hover:text-white transition';
+        }
+
+        window.onload = () => { fetchDataForSelectedOperator(); };
+    </script>
+</body>
+</html>
