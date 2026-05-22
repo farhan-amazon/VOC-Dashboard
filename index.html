@@ -19,7 +19,6 @@
         .border-lime-volt { border-color: #ccff00; }
         .card-shadow { box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.25); }
         
-        /* Custom scrollbar to match sleek theme */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #161d31; }
         ::-webkit-scrollbar-thumb { background: #2e3b62; border-radius: 3px; }
@@ -37,9 +36,9 @@
                     <h1 class="text-xl font-bold tracking-tight text-white">ANow VOC Operational Command Center</h1>
                 </div>
             </div>
-            <div class="flex space-x-1 bg-[#161d31] p-1 rounded-lg border border-[#2e3b62]">
+            <div class="flex space-x-1 bg-slate-800 p-1 rounded-lg border border-slate-700">
                 <button onclick="switchTab('overview')" id="btn-overview" class="px-5 py-2 rounded-md text-sm font-semibold transition bg-lime-volt text-[#161d31] shadow-sm">Dashboard View</button>
-                <button onclick="switchTab('defects')" id="btn-defects" class="px-5 py-2 rounded-md text-sm font-semibold text-slate-400 hover:text-white transition">Ledger Ledger</button>
+                <button onclick="switchTab('defects')" id="btn-defects" class="px-5 py-2 rounded-md text-sm font-semibold text-slate-400 hover:text-white transition">Data Ledger</button>
             </div>
         </div>
     </header>
@@ -64,14 +63,14 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">2. Store Code</label>
+                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">2. Store Code (Col A)</label>
                     <select id="store-selector" onchange="processAndDisplayData()" class="w-full bg-dark-input border border-[#2e3b62] text-white rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-lime-volt outline-none">
                         <option value="All">All Stores</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">3. Date Scope</label>
+                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">3. Date Scope (Col C)</label>
                     <select id="date-selector" onchange="processAndDisplayData()" class="w-full bg-dark-input border border-[#2e3b62] text-white rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-lime-volt outline-none">
                         <option value="All">All Dates</option>
                         <option value="Today">Today</option>
@@ -80,21 +79,21 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">4. Week Filter</label>
+                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">4. Week Filter (Col D)</label>
                     <select id="week-selector" onchange="processAndDisplayData()" class="w-full bg-dark-input border border-[#2e3b62] text-white rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-lime-volt outline-none">
                         <option value="All">All Weeks</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">5. Complaint Type</label>
+                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">5. Complaint (Col G)</label>
                     <select id="complaint-selector" onchange="processAndDisplayData()" class="w-full bg-dark-input border border-[#2e3b62] text-white rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-lime-volt outline-none">
-                        <option value="All">All Types</option>
+                        <option value="All">All Complaints</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">6. RCA Category</label>
+                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">6. RCA Category (Col I)</label>
                     <select id="rca-selector" onchange="processAndDisplayData()" class="w-full bg-dark-input border border-[#2e3b62] text-white rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-lime-volt outline-none">
                         <option value="All">All Categories</option>
                     </select>
@@ -103,60 +102,74 @@
             </div>
             <div class="mt-4 pt-4 border-t border-[#2e3b62] flex justify-between items-center text-xs">
                 <span class="text-slate-400">Operational Matrix Sync Status:</span>
-                <span id="sync-status" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#161d31] text-lime-volt border border-[#2e3b62]">Initializing Connection Pipeline...</span>
+                <span id="sync-status" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#161d31] text-lime-volt border border-[#2e3b62]">Initializing...</span>
             </div>
         </div>
 
         <div id="tab-overview" class="space-y-8">
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-panel p-6 rounded-xl border border-[#2e3b62] card-shadow relative overflow-hidden">
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Complaints Logged</p>
-                    <h3 id="metric-total-voc" class="text-4xl font-bold text-white mt-2">--</h3>
-                    <div class="mt-4 pt-4 border-t border-[#2e3b62] flex items-center justify-between">
-                        <span class="text-xs font-medium text-slate-400">Selected Filter Scope</span>
-                        <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-[#161d31] text-lime-volt uppercase tracking-wider">Real-time</span>
-                    </div>
-                </div>
-
-                <div class="bg-panel p-6 rounded-xl border border-[#2e3b62] card-shadow relative overflow-hidden">
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Week-over-Week (WoW) Delta</p>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Week-over-Week (WoW) Shift</p>
                     <h3 id="metric-wow" class="text-4xl font-bold text-white mt-2">--</h3>
                     <div class="mt-4 pt-4 border-t border-[#2e3b62] flex items-center justify-between">
-                        <span class="text-xs font-medium text-slate-400">Current 7d vs Previous 7d</span>
+                        <span class="text-xs font-medium text-slate-400">Current 7 Days vs Prior Window</span>
                         <span id="trend-wow-sub" class="text-[11px] font-bold px-2 py-0.5 rounded bg-[#161d31]">--</span>
                     </div>
                 </div>
 
                 <div class="bg-panel p-6 rounded-xl border border-[#2e3b62] card-shadow relative overflow-hidden">
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Month-over-Month (MoM) Delta</p>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Month-over-Month (MoM) Shift</p>
                     <h3 id="metric-mom" class="text-4xl font-bold text-white mt-2">--</h3>
                     <div class="mt-4 pt-4 border-t border-[#2e3b62] flex items-center justify-between">
-                        <span class="text-xs font-medium text-slate-400">Current 30d vs Previous 30d</span>
+                        <span class="text-xs font-medium text-slate-400">Current 30 Days vs Prior Window</span>
                         <span id="trend-mom-sub" class="text-[11px] font-bold px-2 py-0.5 rounded bg-[#161d31]">--</span>
                     </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 bg-panel p-6 rounded-xl border border-[#2e3b62] card-shadow">
-                    <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-5 border-l-2 border-lime-volt pl-2">Top Log Distribution Across Sites</h3>
-                    <div id="site-distribution-bars" class="space-y-4 min-h-[160px] flex flex-col justify-center">
-                        <p class="text-sm text-slate-400 text-center">Parsing target records...</p>
-                    </div>
-                </div>
+            <div class="bg-panel p-6 rounded-xl border border-[#2e3b62] card-shadow">
+                <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-6 border-l-2 border-lime-volt pl-2">Strategic KPI Summary Index</h3>
                 
-                <div class="bg-panel p-6 rounded-xl border border-[#2e3b62] card-shadow flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-4 border-l-2 border-lime-volt pl-2">Latest Log Entry Alert</h3>
-                        <div class="bg-[#161d31] rounded-lg p-4 border border-[#2e3b62]">
-                            <p class="text-[10px] font-bold text-lime-volt uppercase tracking-wider mb-1">Raw Content Strip</p>
-                            <p id="metric-latest-issue" class="text-sm font-medium text-slate-300 italic leading-relaxed">Awaiting stream processing...</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-[#192038] p-5 rounded-lg border border-[#2e3b62] flex flex-col justify-between">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total VOC Count</span>
+                        <div class="flex items-baseline justify-between mt-2">
+                            <span id="kpi-total-voc" class="text-3xl font-bold text-white">0</span>
+                            <span class="text-[10px] text-lime-volt bg-[#161d31] px-1.5 py-0.5 rounded font-medium">Filtered</span>
                         </div>
                     </div>
-                    <div class="mt-6 pt-4 border-t border-[#2e3b62] text-xs text-slate-400 leading-relaxed">
-                        Extracted directly from the last active record row matching your custom criteria mix.
+
+                    <div class="bg-[#192038] p-5 rounded-lg border border-[#2e3b62] flex flex-col justify-between">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Ops Controllable - QC Miss</span>
+                        <div class="flex items-baseline justify-between mt-2">
+                            <span id="kpi-qc-miss" class="text-3xl font-bold text-white">0</span>
+                            <span id="pct-qc-miss" class="text-xs text-slate-400 font-medium">0% of total</span>
+                        </div>
                     </div>
+
+                    <div class="bg-[#192038] p-5 rounded-lg border border-[#2e3b62] flex flex-col justify-between">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Ops Controllable - Picker Mistakes</span>
+                        <div class="flex items-baseline justify-between mt-2">
+                            <span id="kpi-picker-mistakes" class="text-3xl font-bold text-white">0</span>
+                            <span id="pct-picker-mistakes" class="text-xs text-slate-400 font-medium">0% of total</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#192038] p-5 rounded-lg border border-[#2e3b62] flex flex-col justify-between">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Catalogue Issues</span>
+                        <div class="flex items-baseline justify-between mt-2">
+                            <span id="kpi-catalogue-issues" class="text-3xl font-bold text-white">0</span>
+                            <span id="pct-catalogue-issues" class="text-xs text-slate-400 font-medium">0% of total</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-panel p-6 rounded-xl border border-[#2e3b62] card-shadow">
+                <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-5 border-l-2 border-lime-volt pl-2">Top Defect Concentrations by Store Code</h3>
+                <div id="site-distribution-bars" class="space-y-4">
+                    <p class="text-sm text-slate-400 text-center">Awaiting data layout mapping...</p>
                 </div>
             </div>
         </div>
@@ -164,7 +177,7 @@
         <div id="tab-defects" class="hidden space-y-6">
             <div class="bg-panel rounded-xl border border-[#2e3b62] card-shadow overflow-hidden">
                 <div class="px-6 py-4 border-b border-[#2e3b62] bg-[#192038]">
-                    <h3 class="text-xs font-bold text-white uppercase tracking-wider">Granular Operations Ledger</h3>
+                    <h3 class="text-xs font-bold text-white uppercase tracking-wider">Granular Operations Ledger (Newest Rows First)</h3>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
@@ -172,7 +185,7 @@
                             </thead>
                         <tbody id="data-table-body" class="text-sm divide-y divide-[#2e3b62] text-slate-300">
                             <tr>
-                                <td colspan="5" class="p-8 text-center text-slate-400">Awaiting stream allocation...</td>
+                                <td colspan="10" class="p-8 text-center text-slate-400">Awaiting stream allocation...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -187,8 +200,12 @@
         let parsedHeaders = [];
         let globalRecords = [];
 
-        // Dynamic key mappings to match different 3P column names safely
-        let storeKey = '', dateKey = '', weekKey = '', complaintKey = '', rcaKey = '', issueKey = '';
+        // FIXED STRUCTURAL COLUMN INDEXES (0-based array mapping matching your rules)
+        const COL_STORE_IDX = 0;      // Column A
+        const COL_DATE_IDX = 2;       // Column C
+        const COL_WEEK_IDX = 3;       // Column D
+        const COL_COMPLAINT_IDX = 6;  // Column G
+        const COL_RCA_IDX = 8;        // Column I
 
         async function fetchDataForSelectedOperator() {
             const operatorTabName = document.getElementById('operator-selector').value;
@@ -208,8 +225,7 @@
                 statusEl.innerText = `${operatorTabName.toUpperCase()} PIPELINE ACTIVE`;
                 statusEl.className = "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#161d31] text-lime-volt border border-[#2e3b62]";
                 
-                identifyColumnKeys();
-                populateAllFilterDropdowns();
+                populateFilterDropdowns();
                 processAndDisplayData();
             } catch (error) {
                 console.error(error);
@@ -226,28 +242,36 @@
                 return;
             }
 
+            // Keep clean exact case arrays of raw string tokens
             parsedHeaders = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim());
             
             globalRecords = lines.slice(1).map(line => {
-                const cells = line.split(',').map(c => c.replace(/^"|"$/g, '').trim());
-                let rowObj = {};
-                parsedHeaders.forEach((header, index) => {
-                    rowObj[header.toLowerCase()] = cells[index] || '';
-                });
-                return rowObj;
+                return line.split(',').map(c => c.replace(/^"|"$/g, '').trim());
             });
         }
 
-        function identifyColumnKeys() {
-            if (globalRecords.length === 0) return;
-            const keys = Object.keys(globalRecords[0]);
+        function populateFilterDropdowns() {
+            setupDropdownIndexed('store-selector', COL_STORE_IDX, 'All Stores');
+            setupDropdownIndexed('week-selector', COL_WEEK_IDX, 'All Weeks');
+            setupDropdownIndexed('complaint-selector', COL_COMPLAINT_IDX, 'All Complaints');
+            setupDropdownIndexed('rca-selector', COL_RCA_IDX, 'All Categories');
+        }
+
+        function setupDropdownIndexed(elementId, colIdx, defaultText) {
+            const selector = document.getElementById(elementId);
+            const currentSelection = selector.value;
+            selector.innerHTML = `<option value="All">${defaultText}</option>`;
             
-            storeKey = keys.find(k => k.includes('store') || k.includes('site') || k.includes('code')) || '';
-            dateKey = keys.find(k => k.includes('date') || k.includes('time') || k.includes('timestamp')) || '';
-            weekKey = keys.find(k => k.includes('week') || k.includes('wk')) || '';
-            complaintKey = keys.find(k => k.includes('complaint') || k.includes('type') || k.includes('defect')) || '';
-            rcaKey = keys.find(k => k.includes('rca') || k.includes('category') || k.includes('root')) || '';
-            issueKey = keys.find(k => k.includes('issue') || k.includes('comment') || k.includes('feedback') || k.includes('summary')) || '';
+            if (globalRecords.length === 0) return;
+            
+            const uniqueValues = [...new Set(globalRecords.map(r => r[colIdx]))].filter(Boolean).sort();
+            uniqueValues.forEach(val => {
+                const opt = document.createElement('option');
+                opt.value = val;
+                opt.innerText = val;
+                selector.appendChild(opt);
+            });
+            if (uniqueValues.includes(currentSelection)) selector.value = currentSelection;
         }
 
         function parseFlexibleDate(dateStr) {
@@ -261,36 +285,12 @@
                 let month = parseInt(parts[1], 10) - 1;
                 let year = parseInt(parts[2], 10);
                 if (year < 100) year += 2000;
-                if (month > 11) { // inversion swap fix
+                if (month > 11) {
                     let temp = day; day = month + 1; month = temp - 1;
                 }
                 return new Date(year, month, day);
             }
             return new Date(cleanStr);
-        }
-
-        function populateAllFilterDropdowns() {
-            setupDropdown('store-selector', storeKey, 'All Stores');
-            setupDropdown('week-selector', weekKey, 'All Weeks');
-            setupDropdown('complaint-selector', complaintKey, 'All Types');
-            setupDropdown('rca-selector', rcaKey, 'All Categories');
-        }
-
-        function setupDropdown(elementId, dataKey, defaultText) {
-            const selector = document.getElementById(elementId);
-            const currentSelection = selector.value;
-            selector.innerHTML = `<option value="All">${defaultText}</option>`;
-            
-            if (!dataKey || globalRecords.length === 0) return;
-            
-            const uniqueValues = [...new Set(globalRecords.map(r => r[dataKey]))].filter(Boolean).sort();
-            uniqueValues.forEach(val => {
-                const opt = document.createElement('option');
-                opt.value = val;
-                opt.innerText = val;
-                selector.appendChild(opt);
-            });
-            if (uniqueValues.includes(currentSelection)) selector.value = currentSelection;
         }
 
         function processAndDisplayData() {
@@ -299,23 +299,21 @@
                 return;
             }
 
-            // Extract the 6 current filter options
             const fStore = document.getElementById('store-selector').value;
             const fDate = document.getElementById('date-selector').value;
             const fWeek = document.getElementById('week-selector').value;
             const fComplaint = document.getElementById('complaint-selector').value;
             const fRca = document.getElementById('rca-selector').value;
 
-            // Multi-Layer Filter Engine Execution
+            // Execute Multi-Layer Filtering Using the Explicit Column Indexes
             let displayRecords = globalRecords.filter(r => {
-                if (fStore !== 'All' && r[storeKey] !== fStore) return false;
-                if (fWeek !== 'All' && r[weekKey] !== fWeek) return false;
-                if (fComplaint !== 'All' && r[complaintKey] !== fComplaint) return false;
-                if (fRca !== 'All' && r[rcaKey] !== fRca) return false;
+                if (fStore !== 'All' && r[COL_STORE_IDX] !== fStore) return false;
+                if (fWeek !== 'All' && r[COL_WEEK_IDX] !== fWeek) return false;
+                if (fComplaint !== 'All' && r[COL_COMPLAINT_IDX] !== fComplaint) return false;
+                if (fRca !== 'All' && r[COL_RCA_IDX] !== fRca) return false;
                 
-                // Date Specific Filtration logic
-                if (fDate !== 'All' && dateKey) {
-                    const recordDate = parseFlexibleDate(r[dateKey]);
+                if (fDate !== 'All') {
+                    const recordDate = parseFlexibleDate(r[COL_DATE_IDX]);
                     if (isNaN(recordDate.getTime())) return false;
                     
                     const todayStr = new Date().toDateString();
@@ -331,59 +329,79 @@
                 return true;
             });
 
-            // 1. Calculate Historical Trends (Pass store filtered array to maintain scale)
+            // 1. Calculate Historical Trends
             let storeFilteredBase = globalRecords;
-            if (fStore !== 'All' && storeKey) {
-                storeFilteredBase = globalRecords.filter(r => r[storeKey] === fStore);
+            if (fStore !== 'All') {
+                storeFilteredBase = globalRecords.filter(r => r[COL_STORE_IDX] === fStore);
             }
             calculateTrends(storeFilteredBase);
 
-            // 2. Update Primary Metric Metrics
-            document.getElementById('metric-total-voc').innerText = displayRecords.length;
-            const latestText = displayRecords.length > 0 && issueKey ? displayRecords[displayRecords.length - 1][issueKey] : 'No recorded defects matching scope filters';
-            document.getElementById('metric-latest-issue').innerText = latestText;
+            // 2. Generate the Four Sections for Strategic Performance Metrics
+            calculateStrategicKPIs(displayRecords);
 
-            // 3. Render Horizontal Volumetric Distribution Bar Frameworks
+            // 3. Render Store Bar Distribution Profiles
             renderSiteDistribution(displayRecords);
 
             // 4. Construct Data Ledger Matrix Viewports
             const tableHead = document.getElementById('table-head');
-            tableHead.innerHTML = `<tr>${parsedHeaders.slice(0, 6).map(h => `<th class="p-4 font-semibold text-slate-300 border-b border-[#2e3b62]">${h}</th>`).join('')}</tr>`;
+            tableHead.innerHTML = `<tr>${parsedHeaders.map(h => `<th class="p-4 font-semibold text-slate-300 border-b border-[#2e3b62]">${h}</th>`).join('')}</tr>`;
 
             const tbody = document.getElementById('data-table-body');
             if (displayRecords.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400">No matching operational tracking entries found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="${parsedHeaders.length}" class="p-8 text-center text-slate-400">No matching operational logs located inside active scopes.</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = displayRecords.slice(-50).map(row => {
-                const cellValues = Object.values(row).slice(0, 6);
+            // Render all cells per line matching your columns cleanly
+            tbody.innerHTML = displayRecords.slice(-100).map(row => {
                 return `<tr class="hover:bg-[#192038] transition border-b border-[#2e3b62]">
-                    ${cellValues.map((val, idx) => `<td class="p-4 ${idx === 0 ? 'text-lime-volt font-semibold' : 'text-slate-300'}">${val}</td>`).join('')}
+                    ${row.map((val, idx) => `<td class="p-4 ${idx === COL_STORE_IDX ? 'text-lime-volt font-semibold' : 'text-slate-300'}">${val}</td>`).join('')}
                 </tr>`;
             }).reverse().join('');
         }
 
-        function calculateTrends(records) {
-            if (!dateKey || records.length === 0) {
-                resetTrendUI();
-                return;
-            }
+        function calculateStrategicKPIs(records) {
+            const totalCount = records.length;
+            document.getElementById('kpi-total-voc').innerText = totalCount;
 
+            let qcMissCount = 0;
+            let pickerMistakesCount = 0;
+            let catalogueIssuesCount = 0;
+
+            records.forEach(r => {
+                // Read from Column I (RCA Category)
+                const rcaVal = (r[COL_RCA_IDX] || '').toLowerCase();
+                // Read from Column G (Complaint Type)
+                const complaintVal = (r[COL_COMPLAINT_IDX] || '').toLowerCase();
+
+                if (rcaVal.includes('qc miss') || rcaVal.includes('qc_miss')) qcMissCount++;
+                if (rcaVal.includes('picker') || rcaVal.includes('picking')) pickerMistakesCount++;
+                if (complaintVal.includes('catalogue') || rcaVal.includes('catalogue') || rcaVal.includes('catalog')) catalogueIssuesCount++;
+            });
+
+            document.getElementById('kpi-qc-miss').innerText = qcMissCount;
+            document.getElementById('kpi-picker-mistakes').innerText = pickerMistakesCount;
+            document.getElementById('kpi-catalogue-issues').innerText = catalogueIssuesCount;
+
+            // Generate Percentages
+            document.getElementById('pct-qc-miss').innerText = totalCount > 0 ? `${((qcMissCount / totalCount) * 100).toFixed(1)}% of total` : '0% of total';
+            document.getElementById('pct-picker-mistakes').innerText = totalCount > 0 ? `${((pickerMistakesCount / totalCount) * 100).toFixed(1)}% of total` : '0% of total';
+            document.getElementById('pct-catalogue-issues').innerText = totalCount > 0 ? `${((catalogueIssuesCount / totalCount) * 100).toFixed(1)}% of total` : '0% of total';
+        }
+
+        function calculateTrends(records) {
             const now = new Date();
             const oneDay = 24 * 60 * 60 * 1000;
 
-            // WoW grouping calculations
-            const currentWeekCount = records.filter(r => (now - parseFlexibleDate(r[dateKey])) / oneDay <= 7).length;
+            const currentWeekCount = records.filter(r => (now - parseFlexibleDate(r[COL_DATE_IDX])) / oneDay <= 7).length;
             const priorWeekCount = records.filter(r => {
-                const diff = (now - parseFlexibleDate(r[dateKey])) / oneDay;
+                const diff = (now - parseFlexibleDate(r[COL_DATE_IDX])) / oneDay;
                 return diff > 7 && diff <= 14;
             }).length;
 
-            // MoM grouping calculations
-            const currentMonthCount = records.filter(r => (now - parseFlexibleDate(r[dateKey])) / oneDay <= 30).length;
+            const currentMonthCount = records.filter(r => (now - parseFlexibleDate(r[COL_DATE_IDX])) / oneDay <= 30).length;
             const priorMonthCount = records.filter(r => {
-                const diff = (now - parseFlexibleDate(r[dateKey])) / oneDay;
+                const diff = (now - parseFlexibleDate(r[COL_DATE_IDX])) / oneDay;
                 return diff > 30 && diff <= 60;
             }).length;
 
@@ -394,11 +412,10 @@
         function displayTrendUI(metricId, subId, current, prior) {
             const el = document.getElementById(metricId);
             const subEl = document.getElementById(subId);
-            
             el.innerText = current;
             
             if (prior === 0) {
-                subEl.innerText = `STABLE BASE`;
+                subEl.innerText = `INITIAL BASELINE`;
                 subEl.className = "text-[11px] font-bold px-2 py-0.5 rounded bg-[#161d31] text-slate-400";
                 return;
             }
@@ -407,27 +424,27 @@
             const formatted = percentChange.toFixed(1);
 
             if (percentChange > 0) {
-                subEl.innerText = `+${formatted}% VOLUMETRIC SPIKE`;
+                subEl.innerText = `+${formatted}% VOLUME SPIKE`;
                 subEl.className = "text-[11px] font-bold px-2 py-0.5 rounded bg-[#161d31] text-red-400";
             } else if (percentChange < 0) {
-                subEl.innerText = `${formatted}% COMPLIANCE GAIN`;
+                subEl.innerText = `${formatted}% DEFECT REDUCTION`;
                 subEl.className = "text-[11px] font-bold px-2 py-0.5 rounded bg-[#161d31] text-lime-volt";
             } else {
-                subEl.innerText = `0.0% FLAT VARIANCE`;
+                subEl.innerText = `0.0% STABLE VARIANCE`;
                 subEl.className = "text-[11px] font-bold px-2 py-0.5 rounded bg-[#161d31] text-slate-400";
             }
         }
 
         function renderSiteDistribution(records) {
             const container = document.getElementById('site-distribution-bars');
-            if (!storeKey || records.length === 0) {
-                container.innerHTML = `<p class="text-sm text-slate-400 text-center">No structural distribution parameters located within selection grid.</p>`;
+            if (records.length === 0) {
+                container.innerHTML = `<p class="text-sm text-slate-400 text-center">No location metrics available.</p>`;
                 return;
             }
 
             const counts = {};
             records.forEach(r => {
-                const store = r[storeKey] || 'Unidentified Hub';
+                const store = r[COL_STORE_IDX] || 'Unknown Hub';
                 counts[store] = (counts[store] || 0) + 1;
             });
 
@@ -438,8 +455,8 @@
                 const pct = maxVal > 0 ? (count / maxVal) * 100 : 0;
                 return `<div class="space-y-1">
                     <div class="flex justify-between text-xs font-semibold text-slate-300">
-                        <span>Darkstore Footprint Reference: ${store}</span>
-                        <span class="text-lime-volt">${count} Records Line</span>
+                        <span>Store: ${store}</span>
+                        <span class="text-lime-volt">${count} Incidents</span>
                     </div>
                     <div class="w-full bg-[#161d31] h-3 rounded-full overflow-hidden border border-[#2e3b62]">
                         <div class="bg-lime-volt h-full rounded-full transition-all duration-700" style="width: ${pct}%"></div>
@@ -451,15 +468,17 @@
         function resetTrendUI() {
             document.getElementById('metric-wow').innerText = '--';
             document.getElementById('metric-mom').innerText = '--';
-            document.getElementById('trend-wow-sub').innerText = 'NO PIPELINE DATA';
-            document.getElementById('trend-mom-sub').innerText = 'NO PIPELINE DATA';
+            document.getElementById('trend-wow-sub').innerText = 'NO DATA';
+            document.getElementById('trend-mom-sub').innerText = 'NO DATA';
         }
 
         function clearDashboard() {
-            document.getElementById('metric-total-voc').innerText = '0';
+            document.getElementById('kpi-total-voc').innerText = '0';
+            document.getElementById('kpi-qc-miss').innerText = '0';
+            document.getElementById('kpi-picker-mistakes').innerText = '0';
+            document.getElementById('kpi-catalogue-issues').innerText = '0';
             resetTrendUI();
-            document.getElementById('metric-latest-issue').innerText = 'No records current inside workspace scope filters';
-            document.getElementById('data-table-body').innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400">Empty matrix set.</td></tr>`;
+            document.getElementById('data-table-body').innerHTML = `<tr><td colspan="10" class="p-8 text-center text-slate-400">Empty workspace matrix.</td></tr>`;
         }
 
         function switchTab(tabName) {
