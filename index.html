@@ -3,39 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ANow VOC Executive Dashboard</title>
+    <title>ANow VOC Command Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
-        .card-shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05); }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #161d31; 
+            color: #b4c1d9; 
+        }
+        .bg-panel { background-color: #222b45; }
+        .bg-dark-input { background-color: #192038; }
+        .text-lime-volt { color: #ccff00; }
+        .bg-lime-volt { background-color: #ccff00; }
+        .border-lime-volt { border-color: #ccff00; }
+        .card-shadow { box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.25); }
+        
+        /* Custom scrollbar to match sleek theme */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #161d31; }
+        ::-webkit-scrollbar-thumb { background: #2e3b62; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ccff00; }
     </style>
 </head>
 <body class="min-h-screen pb-12">
 
-    <header class="bg-[#0f172a] text-white shadow-md sticky top-0 z-50">
+    <header class="bg-[#192038] border-b border-[#222b45] text-white shadow-md sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <div class="flex items-center space-x-4">
-                <div class="h-4 w-4 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
+                <div class="h-4 w-4 rounded-full bg-lime-volt shadow-[0_0_12px_#ccff00]"></div>
                 <div>
-                    <span class="text-xs font-semibold tracking-widest text-blue-400 uppercase block">Amazon Now (ANow)</span>
-                    <h1 class="text-xl font-bold tracking-tight text-white">VOC Strategy & Compliance Portal</h1>
+                    <span class="text-xs font-bold tracking-widest text-lime-volt uppercase block">Strategic Overview</span>
+                    <h1 class="text-xl font-bold tracking-tight text-white">ANow VOC Operational Command Center</h1>
                 </div>
             </div>
-            <div class="flex space-x-1 bg-slate-800 p-1 rounded-lg border border-slate-700">
-                <button onclick="switchTab('overview')" id="btn-overview" class="px-5 py-2 rounded-md text-sm font-semibold transition bg-blue-600 text-white shadow-sm">Executive Overview</button>
-                <button onclick="switchTab('defects')" id="btn-defects" class="px-5 py-2 rounded-md text-sm font-semibold text-slate-400 hover:text-white transition">Defect Deep-Dive</button>
+            <div class="flex space-x-1 bg-[#161d31] p-1 rounded-lg border border-[#2e3b62]">
+                <button onclick="switchTab('overview')" id="btn-overview" class="px-5 py-2 rounded-md text-sm font-semibold transition bg-lime-volt text-[#161d31] shadow-sm">Dashboard View</button>
+                <button onclick="switchTab('defects')" id="btn-defects" class="px-5 py-2 rounded-md text-sm font-semibold text-slate-400 hover:text-white transition">Ledger Ledger</button>
             </div>
         </div>
     </header>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         
-        <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow flex flex-wrap items-end justify-between gap-6 mb-8">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 flex-grow">
+        <div class="bg-panel p-6 rounded-xl border border-[#2e3b62] card-shadow mb-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+                
                 <div>
-                    <label class="block text-xs text-slate-500 font-bold uppercase tracking-wider mb-2">3P UTR Operator</label>
-                    <select id="operator-selector" onchange="fetchDataForSelectedOperator()" class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">1. 3P Operator</label>
+                    <select id="operator-selector" onchange="fetchDataForSelectedOperator()" class="w-full bg-dark-input border border-[#2e3b62] text-white rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-lime-volt outline-none">
                         <option value="Transcorp">Transcorp</option>
                         <option value="EMX">EMX</option>
                         <option value="INDU">INDU</option>
@@ -46,93 +62,117 @@
                         <option value="ENOC">ENOC</option>
                     </select>
                 </div>
+
                 <div>
-                    <label class="block text-xs text-slate-500 font-bold uppercase tracking-wider mb-2">Store Filter</label>
-                    <select id="store-selector" onchange="processAndDisplayData()" class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
-                        <option value="All">All Stores Matrix</option>
+                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">2. Store Code</label>
+                    <select id="store-selector" onchange="processAndDisplayData()" class="w-full bg-dark-input border border-[#2e3b62] text-white rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-lime-volt outline-none">
+                        <option value="All">All Stores</option>
                     </select>
                 </div>
+
                 <div>
-                    <label class="block text-xs text-slate-500 font-bold uppercase tracking-wider mb-2">Timeframe Scope</label>
-                    <select id="time-selector" onchange="processAndDisplayData()" class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-lg px-3 py-2 text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
-                        <option value="All">All-Time Cumulative</option>
-                        <option value="30">Last 30 Days</option>
-                        <option value="7">Last 7 Days</option>
+                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">3. Date Scope</label>
+                    <select id="date-selector" onchange="processAndDisplayData()" class="w-full bg-dark-input border border-[#2e3b62] text-white rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-lime-volt outline-none">
+                        <option value="All">All Dates</option>
+                        <option value="Today">Today</option>
+                        <option value="Yesterday">Yesterday</option>
                     </select>
                 </div>
+
+                <div>
+                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">4. Week Filter</label>
+                    <select id="week-selector" onchange="processAndDisplayData()" class="w-full bg-dark-input border border-[#2e3b62] text-white rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-lime-volt outline-none">
+                        <option value="All">All Weeks</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">5. Complaint Type</label>
+                    <select id="complaint-selector" onchange="processAndDisplayData()" class="w-full bg-dark-input border border-[#2e3b62] text-white rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-lime-volt outline-none">
+                        <option value="All">All Types</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">6. RCA Category</label>
+                    <select id="rca-selector" onchange="processAndDisplayData()" class="w-full bg-dark-input border border-[#2e3b62] text-white rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-lime-volt outline-none">
+                        <option value="All">All Categories</option>
+                    </select>
+                </div>
+
             </div>
-            <div class="text-right min-w-[120px]">
-                <span class="text-xs text-slate-400 font-semibold uppercase block mb-1">Data Stream</span>
-                <span id="sync-status" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">Connecting...</span>
+            <div class="mt-4 pt-4 border-t border-[#2e3b62] flex justify-between items-center text-xs">
+                <span class="text-slate-400">Operational Matrix Sync Status:</span>
+                <span id="sync-status" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#161d31] text-lime-volt border border-[#2e3b62]">Initializing Connection Pipeline...</span>
             </div>
         </div>
 
         <div id="tab-overview" class="space-y-8">
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow relative">
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Defect Volume</p>
-                    <h3 id="metric-total-voc" class="text-4xl font-bold text-slate-900 mt-2">--</h3>
-                    <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
-                        <span class="text-xs font-medium text-slate-500">Active range scope</span>
-                        <span id="trend-overall" class="text-xs font-semibold px-2 py-0.5 rounded-full">--</span>
+                <div class="bg-panel p-6 rounded-xl border border-[#2e3b62] card-shadow relative overflow-hidden">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Complaints Logged</p>
+                    <h3 id="metric-total-voc" class="text-4xl font-bold text-white mt-2">--</h3>
+                    <div class="mt-4 pt-4 border-t border-[#2e3b62] flex items-center justify-between">
+                        <span class="text-xs font-medium text-slate-400">Selected Filter Scope</span>
+                        <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-[#161d31] text-lime-volt uppercase tracking-wider">Real-time</span>
                     </div>
                 </div>
 
-                <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow relative">
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Week-over-Week (WoW) Shift</p>
-                    <h3 id="metric-wow" class="text-4xl font-bold text-slate-900 mt-2">--</h3>
-                    <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
-                        <span class="text-xs font-medium text-slate-500">Current vs Last 7 Days</span>
-                        <span id="trend-wow-sub" class="text-xs text-slate-400">Comparing periods</span>
+                <div class="bg-panel p-6 rounded-xl border border-[#2e3b62] card-shadow relative overflow-hidden">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Week-over-Week (WoW) Delta</p>
+                    <h3 id="metric-wow" class="text-4xl font-bold text-white mt-2">--</h3>
+                    <div class="mt-4 pt-4 border-t border-[#2e3b62] flex items-center justify-between">
+                        <span class="text-xs font-medium text-slate-400">Current 7d vs Previous 7d</span>
+                        <span id="trend-wow-sub" class="text-[11px] font-bold px-2 py-0.5 rounded bg-[#161d31]">--</span>
                     </div>
                 </div>
 
-                <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow relative">
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Month-over-Month (MoM) Shift</p>
-                    <h3 id="metric-mom" class="text-4xl font-bold text-slate-900 mt-2">--</h3>
-                    <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
-                        <span class="text-xs font-medium text-slate-500">Current vs Last 30 Days</span>
-                        <span id="trend-mom-sub" class="text-xs text-slate-400">Comparing periods</span>
+                <div class="bg-panel p-6 rounded-xl border border-[#2e3b62] card-shadow relative overflow-hidden">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Month-over-Month (MoM) Delta</p>
+                    <h3 id="metric-mom" class="text-4xl font-bold text-white mt-2">--</h3>
+                    <div class="mt-4 pt-4 border-t border-[#2e3b62] flex items-center justify-between">
+                        <span class="text-xs font-medium text-slate-400">Current 30d vs Previous 30d</span>
+                        <span id="trend-mom-sub" class="text-[11px] font-bold px-2 py-0.5 rounded bg-[#161d31]">--</span>
                     </div>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 card-shadow">
-                    <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4">Site Distribution Index</h3>
-                    <div id="site-distribution-bars" class="space-y-3 min-h-[150px] flex flex-col justify-center">
-                        <p class="text-sm text-slate-400 text-center">Syncing structural data analytics...</p>
+                <div class="lg:col-span-2 bg-panel p-6 rounded-xl border border-[#2e3b62] card-shadow">
+                    <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-5 border-l-2 border-lime-volt pl-2">Top Log Distribution Across Sites</h3>
+                    <div id="site-distribution-bars" class="space-y-4 min-h-[160px] flex flex-col justify-center">
+                        <p class="text-sm text-slate-400 text-center">Parsing target records...</p>
                     </div>
                 </div>
                 
-                <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between">
+                <div class="bg-panel p-6 rounded-xl border border-[#2e3b62] card-shadow flex flex-col justify-between">
                     <div>
-                        <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4">Latest Operational Alert</h3>
-                        <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
-                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">Raw Feedback Entry</p>
-                            <p id="metric-latest-issue" class="text-sm font-medium text-slate-700 italic">Awaiting sync pipeline...</p>
+                        <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-4 border-l-2 border-lime-volt pl-2">Latest Log Entry Alert</h3>
+                        <div class="bg-[#161d31] rounded-lg p-4 border border-[#2e3b62]">
+                            <p class="text-[10px] font-bold text-lime-volt uppercase tracking-wider mb-1">Raw Content Strip</p>
+                            <p id="metric-latest-issue" class="text-sm font-medium text-slate-300 italic leading-relaxed">Awaiting stream processing...</p>
                         </div>
                     </div>
-                    <div class="mt-6 pt-4 border-t border-slate-100 text-xs text-slate-400 leading-relaxed">
-                        Alert generated dynamically from the final log entry in the target operator tab matrix.
+                    <div class="mt-6 pt-4 border-t border-[#2e3b62] text-xs text-slate-400 leading-relaxed">
+                        Extracted directly from the last active record row matching your custom criteria mix.
                     </div>
                 </div>
             </div>
         </div>
 
         <div id="tab-defects" class="hidden space-y-6">
-            <div class="bg-white rounded-xl border border-slate-200 card-shadow overflow-hidden">
-                <div class="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
-                    <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Granular Operations Ledger</h3>
+            <div class="bg-panel rounded-xl border border-[#2e3b62] card-shadow overflow-hidden">
+                <div class="px-6 py-4 border-b border-[#2e3b62] bg-[#192038]">
+                    <h3 class="text-xs font-bold text-white uppercase tracking-wider">Granular Operations Ledger</h3>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
-                        <thead id="table-head" class="text-xs font-bold uppercase text-slate-500 bg-slate-100/70 border-b border-slate-200">
+                        <thead id="table-head" class="text-xs font-bold uppercase text-slate-300 bg-[#161d31] border-b border-[#2e3b62]">
                             </thead>
-                        <tbody id="data-table-body" class="text-sm divide-y divide-slate-200 text-slate-600">
+                        <tbody id="data-table-body" class="text-sm divide-y divide-[#2e3b62] text-slate-300">
                             <tr>
-                                <td colspan="5" class="p-8 text-center text-slate-400">Loading tracking rows...</td>
+                                <td colspan="5" class="p-8 text-center text-slate-400">Awaiting stream allocation...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -147,35 +187,38 @@
         let parsedHeaders = [];
         let globalRecords = [];
 
+        // Dynamic key mappings to match different 3P column names safely
+        let storeKey = '', dateKey = '', weekKey = '', complaintKey = '', rcaKey = '', issueKey = '';
+
         async function fetchDataForSelectedOperator() {
             const operatorTabName = document.getElementById('operator-selector').value;
             const statusEl = document.getElementById('sync-status');
             
-            statusEl.innerText = `Fetching...`;
-            statusEl.className = "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200";
+            statusEl.innerText = `Connecting Stream...`;
+            statusEl.className = "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#161d31] text-amber-400 border border-[#2e3b62]";
 
             const fetchUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(operatorTabName)}`;
 
             try {
                 const response = await fetch(fetchUrl);
-                if (!response.ok) throw new Error('Data pipeline sync failure');
+                if (!response.ok) throw new Error('Network timeout/Permission failure');
                 const csvText = await response.text();
                 
                 parseCSV(csvText);
-                statusEl.innerText = `Synced`;
-                statusEl.className = "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200";
+                statusEl.innerText = `${operatorTabName.toUpperCase()} PIPELINE ACTIVE`;
+                statusEl.className = "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#161d31] text-lime-volt border border-[#2e3b62]";
                 
-                populateStoreFilter();
+                identifyColumnKeys();
+                populateAllFilterDropdowns();
                 processAndDisplayData();
             } catch (error) {
                 console.error(error);
-                statusEl.innerText = `Sync Error`;
-                statusEl.className = "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-200";
+                statusEl.innerText = `SYNC FAILURE`;
+                statusEl.className = "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#161d31] text-red-500 border border-[#2e3b62]";
             }
         }
 
         function parseCSV(text) {
-            // Clean lines and strip quotes
             const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
             if (lines.length === 0) {
                 globalRecords = [];
@@ -195,93 +238,133 @@
             });
         }
 
-        function populateStoreFilter() {
-            const storeSelector = document.getElementById('store-selector');
-            const currentSelection = storeSelector.value;
-            storeSelector.innerHTML = '<option value="All">All Stores Matrix</option>';
-            
+        function identifyColumnKeys() {
             if (globalRecords.length === 0) return;
-            const storeKey = Object.keys(globalRecords[0]).find(k => k.includes('store') || k.includes('site')) || '';
+            const keys = Object.keys(globalRecords[0]);
             
-            if (storeKey) {
-                const uniqueStores = [...new Set(globalRecords.map(r => r[storeKey]))].filter(Boolean).sort();
-                uniqueStores.forEach(store => {
-                    const opt = document.createElement('option');
-                    opt.value = store;
-                    opt.innerText = store;
-                    storeSelector.appendChild(opt);
-                });
-                if (uniqueStores.includes(currentSelection)) storeSelector.value = currentSelection;
+            storeKey = keys.find(k => k.includes('store') || k.includes('site') || k.includes('code')) || '';
+            dateKey = keys.find(k => k.includes('date') || k.includes('time') || k.includes('timestamp')) || '';
+            weekKey = keys.find(k => k.includes('week') || k.includes('wk')) || '';
+            complaintKey = keys.find(k => k.includes('complaint') || k.includes('type') || k.includes('defect')) || '';
+            rcaKey = keys.find(k => k.includes('rca') || k.includes('category') || k.includes('root')) || '';
+            issueKey = keys.find(k => k.includes('issue') || k.includes('comment') || k.includes('feedback') || k.includes('summary')) || '';
+        }
+
+        function parseFlexibleDate(dateStr) {
+            if (!dateStr) return new Date(NaN);
+            let cleanStr = dateStr.replace(/"/g, '').trim();
+            if (/^\d{4}-\d{2}-\d{2}/.test(cleanStr)) return new Date(cleanStr);
+            
+            const parts = cleanStr.split(/[-/]/);
+            if (parts.length >= 3) {
+                let day = parseInt(parts[0], 10);
+                let month = parseInt(parts[1], 10) - 1;
+                let year = parseInt(parts[2], 10);
+                if (year < 100) year += 2000;
+                if (month > 11) { // inversion swap fix
+                    let temp = day; day = month + 1; month = temp - 1;
+                }
+                return new Date(year, month, day);
             }
+            return new Date(cleanStr);
+        }
+
+        function populateAllFilterDropdowns() {
+            setupDropdown('store-selector', storeKey, 'All Stores');
+            setupDropdown('week-selector', weekKey, 'All Weeks');
+            setupDropdown('complaint-selector', complaintKey, 'All Types');
+            setupDropdown('rca-selector', rcaKey, 'All Categories');
+        }
+
+        function setupDropdown(elementId, dataKey, defaultText) {
+            const selector = document.getElementById(elementId);
+            const currentSelection = selector.value;
+            selector.innerHTML = `<option value="All">${defaultText}</option>`;
+            
+            if (!dataKey || globalRecords.length === 0) return;
+            
+            const uniqueValues = [...new Set(globalRecords.map(r => r[dataKey]))].filter(Boolean).sort();
+            uniqueValues.forEach(val => {
+                const opt = document.createElement('option');
+                opt.value = val;
+                opt.innerText = val;
+                selector.appendChild(opt);
+            });
+            if (uniqueValues.includes(currentSelection)) selector.value = currentSelection;
         }
 
         function processAndDisplayData() {
-            const selectedStore = document.getElementById('store-selector').value;
-            const selectedTimeframe = document.getElementById('time-selector').value;
-            
             if (globalRecords.length === 0) {
                 clearDashboard();
                 return;
             }
 
-            const storeKey = Object.keys(globalRecords[0]).find(k => k.includes('store') || k.includes('site')) || '';
-            const issueKey = Object.keys(globalRecords[0]).find(k => k.includes('issue') || k.includes('comment') || k.includes('feedback') || k.includes('defect')) || '';
-            const dateKey = Object.keys(globalRecords[0]).find(k => k.includes('date') || k.includes('time')) || '';
+            // Extract the 6 current filter options
+            const fStore = document.getElementById('store-selector').value;
+            const fDate = document.getElementById('date-selector').value;
+            const fWeek = document.getElementById('week-selector').value;
+            const fComplaint = document.getElementById('complaint-selector').value;
+            const fRca = document.getElementById('rca-selector').value;
 
-            // 1. Target Store Filtering
-            let filtered = globalRecords;
-            if (selectedStore !== 'All' && storeKey) {
-                filtered = globalRecords.filter(r => r[storeKey] === selectedStore);
-            }
-
-            // 2. Date/Timeframe Calculations
-            const now = new Date();
-            let finalDisplayRecords = filtered;
-
-            if (dateKey && filtered.length > 0) {
-                finalDisplayRecords = filtered.filter(r => {
-                    const recordDate = new Date(r[dateKey]);
-                    if (isNaN(recordDate)) return true; // Keep if date parsing is messy
+            // Multi-Layer Filter Engine Execution
+            let displayRecords = globalRecords.filter(r => {
+                if (fStore !== 'All' && r[storeKey] !== fStore) return false;
+                if (fWeek !== 'All' && r[weekKey] !== fWeek) return false;
+                if (fComplaint !== 'All' && r[complaintKey] !== fComplaint) return false;
+                if (fRca !== 'All' && r[rcaKey] !== fRca) return false;
+                
+                // Date Specific Filtration logic
+                if (fDate !== 'All' && dateKey) {
+                    const recordDate = parseFlexibleDate(r[dateKey]);
+                    if (isNaN(recordDate.getTime())) return false;
                     
-                    if (selectedTimeframe === '30') {
-                        return (now - recordDate) / (1000 * 60 * 60 * 24) <= 30;
-                    } else if (selectedTimeframe === '7') {
-                        return (now - recordDate) / (1000 * 60 * 60 * 24) <= 7;
+                    const todayStr = new Date().toDateString();
+                    const recordDateStr = recordDate.toDateString();
+                    
+                    if (fDate === 'Today' && recordDateStr !== todayStr) return false;
+                    if (fDate === 'Yesterday') {
+                        const yesterday = new Date();
+                        yesterday.setDate(yesterday.getDate() - 1);
+                        if (recordDateStr !== yesterday.toDateString()) return false;
                     }
-                    return true;
-                });
+                }
+                return true;
+            });
+
+            // 1. Calculate Historical Trends (Pass store filtered array to maintain scale)
+            let storeFilteredBase = globalRecords;
+            if (fStore !== 'All' && storeKey) {
+                storeFilteredBase = globalRecords.filter(r => r[storeKey] === fStore);
             }
+            calculateTrends(storeFilteredBase);
 
-            // 3. WoW & MoM Delta Logic
-            calculateTrends(filtered, dateKey);
+            // 2. Update Primary Metric Metrics
+            document.getElementById('metric-total-voc').innerText = displayRecords.length;
+            const latestText = displayRecords.length > 0 && issueKey ? displayRecords[displayRecords.length - 1][issueKey] : 'No recorded defects matching scope filters';
+            document.getElementById('metric-latest-issue').innerText = latestText;
 
-            // 4. Update Core UI Fields
-            document.getElementById('metric-total-voc').innerText = finalDisplayRecords.length;
-            const latestIssueText = finalDisplayRecords.length > 0 && issueKey ? finalDisplayRecords[finalDisplayRecords.length - 1][issueKey] : 'No recorded defects';
-            document.getElementById('metric-latest-issue').innerText = latestIssueText;
+            // 3. Render Horizontal Volumetric Distribution Bar Frameworks
+            renderSiteDistribution(displayRecords);
 
-            // 5. Render Horizontal Analytics Distribution
-            renderSiteDistribution(finalDisplayRecords, storeKey);
-
-            // 6. Build Ledger Dynamic Elements
+            // 4. Construct Data Ledger Matrix Viewports
             const tableHead = document.getElementById('table-head');
-            tableHead.innerHTML = `<tr>${parsedHeaders.slice(0, 5).map(h => `<th class="p-4 font-semibold text-slate-700">${h}</th>`).join('')}</tr>`;
+            tableHead.innerHTML = `<tr>${parsedHeaders.slice(0, 6).map(h => `<th class="p-4 font-semibold text-slate-300 border-b border-[#2e3b62]">${h}</th>`).join('')}</tr>`;
 
             const tbody = document.getElementById('data-table-body');
-            if (finalDisplayRecords.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400">No matching performance entries found</td></tr>`;
+            if (displayRecords.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400">No matching operational tracking entries found.</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = finalDisplayRecords.map(row => {
-                const cellValues = Object.values(row).slice(0, 5);
-                return `<tr class="hover:bg-slate-50 transition">
-                    ${cellValues.map((val, idx) => `<td class="p-4 ${idx === 0 ? 'text-blue-600 font-semibold' : 'text-slate-600'}">${val}</td>`).join('')}
+            tbody.innerHTML = displayRecords.slice(-50).map(row => {
+                const cellValues = Object.values(row).slice(0, 6);
+                return `<tr class="hover:bg-[#192038] transition border-b border-[#2e3b62]">
+                    ${cellValues.map((val, idx) => `<td class="p-4 ${idx === 0 ? 'text-lime-volt font-semibold' : 'text-slate-300'}">${val}</td>`).join('')}
                 </tr>`;
-            }).join('');
+            }).reverse().join('');
         }
 
-        function calculateTrends(records, dateKey) {
+        function calculateTrends(records) {
             if (!dateKey || records.length === 0) {
                 resetTrendUI();
                 return;
@@ -290,33 +373,33 @@
             const now = new Date();
             const oneDay = 24 * 60 * 60 * 1000;
 
-            // WoW Slices
-            const currentWeekCount = records.filter(r => (now - new Date(r[dateKey])) / oneDay <= 7).length;
+            // WoW grouping calculations
+            const currentWeekCount = records.filter(r => (now - parseFlexibleDate(r[dateKey])) / oneDay <= 7).length;
             const priorWeekCount = records.filter(r => {
-                const diff = (now - new Date(r[dateKey])) / oneDay;
+                const diff = (now - parseFlexibleDate(r[dateKey])) / oneDay;
                 return diff > 7 && diff <= 14;
             }).length;
 
-            // MoM Slices
-            const currentMonthCount = records.filter(r => (now - new Date(r[dateKey])) / oneDay <= 30).length;
+            // MoM grouping calculations
+            const currentMonthCount = records.filter(r => (now - parseFlexibleDate(r[dateKey])) / oneDay <= 30).length;
             const priorMonthCount = records.filter(r => {
-                const diff = (now - new Date(r[dateKey])) / oneDay;
+                const diff = (now - parseFlexibleDate(r[dateKey])) / oneDay;
                 return diff > 30 && diff <= 60;
             }).length;
 
-            displayTrendUI('metric-wow', 'trend-wow-sub', currentWeekCount, priorWeekCount, 'Vs Prior Week');
-            displayTrendUI('metric-mom', 'trend-mom-sub', currentMonthCount, priorMonthCount, 'Vs Prior Month');
+            displayTrendUI('metric-wow', 'trend-wow-sub', currentWeekCount, priorWeekCount);
+            displayTrendUI('metric-mom', 'trend-mom-sub', currentMonthCount, priorMonthCount);
         }
 
-        function displayTrendUI(metricId, subId, current, prior, label) {
+        function displayTrendUI(metricId, subId, current, prior) {
             const el = document.getElementById(metricId);
             const subEl = document.getElementById(subId);
             
             el.innerText = current;
             
             if (prior === 0) {
-                subEl.innerText = `${label}: Stable Baseline`;
-                subEl.className = "text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600";
+                subEl.innerText = `STABLE BASE`;
+                subEl.className = "text-[11px] font-bold px-2 py-0.5 rounded bg-[#161d31] text-slate-400";
                 return;
             }
 
@@ -324,44 +407,42 @@
             const formatted = percentChange.toFixed(1);
 
             if (percentChange > 0) {
-                subEl.innerText = `+${formatted}% ${label}`;
-                subEl.className = "text-xs font-semibold px-2 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-100";
+                subEl.innerText = `+${formatted}% VOLUMETRIC SPIKE`;
+                subEl.className = "text-[11px] font-bold px-2 py-0.5 rounded bg-[#161d31] text-red-400";
             } else if (percentChange < 0) {
-                subEl.innerText = `${formatted}% ${label}`;
-                subEl.className = "text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100";
+                subEl.innerText = `${formatted}% COMPLIANCE GAIN`;
+                subEl.className = "text-[11px] font-bold px-2 py-0.5 rounded bg-[#161d31] text-lime-volt";
             } else {
-                subEl.innerText = `0.0% Flat ${label}`;
-                subEl.className = "text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600";
+                subEl.innerText = `0.0% FLAT VARIANCE`;
+                subEl.className = "text-[11px] font-bold px-2 py-0.5 rounded bg-[#161d31] text-slate-400";
             }
         }
 
-        function renderSiteDistribution(records, storeKey) {
+        function renderSiteDistribution(records) {
             const container = document.getElementById('site-distribution-bars');
             if (!storeKey || records.length === 0) {
-                container.innerHTML = `<p class="text-sm text-slate-400 text-center">No structural distribution vectors available</p>`;
+                container.innerHTML = `<p class="text-sm text-slate-400 text-center">No structural distribution parameters located within selection grid.</p>`;
                 return;
             }
 
-            // Calculate frequencies
             const counts = {};
             records.forEach(r => {
-                const store = r[storeKey] || 'Unknown';
+                const store = r[storeKey] || 'Unidentified Hub';
                 counts[store] = (counts[store] || 0) + 1;
             });
 
-            // Sort top 4
             const sortedStores = Object.entries(counts).sort((a,b) => b[1] - a[1]).slice(0, 4);
             const maxVal = Math.max(...sortedStores.map(s => s[1]));
 
             container.innerHTML = sortedStores.map(([store, count]) => {
                 const pct = maxVal > 0 ? (count / maxVal) * 100 : 0;
                 return `<div class="space-y-1">
-                    <div class="flex justify-between text-xs font-semibold text-slate-600">
-                        <span>${store}</span>
-                        <span>${count} Defect Logs</span>
+                    <div class="flex justify-between text-xs font-semibold text-slate-300">
+                        <span>Darkstore Footprint Reference: ${store}</span>
+                        <span class="text-lime-volt">${count} Records Line</span>
                     </div>
-                    <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
-                        <div class="bg-blue-600 h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+                    <div class="w-full bg-[#161d31] h-3 rounded-full overflow-hidden border border-[#2e3b62]">
+                        <div class="bg-lime-volt h-full rounded-full transition-all duration-700" style="width: ${pct}%"></div>
                     </div>
                 </div>`;
             }).join('');
@@ -370,23 +451,23 @@
         function resetTrendUI() {
             document.getElementById('metric-wow').innerText = '--';
             document.getElementById('metric-mom').innerText = '--';
-            document.getElementById('trend-wow-sub').innerText = 'Awaiting clean timestamp columns';
-            document.getElementById('trend-mom-sub').innerText = 'Awaiting clean timestamp columns';
+            document.getElementById('trend-wow-sub').innerText = 'NO PIPELINE DATA';
+            document.getElementById('trend-mom-sub').innerText = 'NO PIPELINE DATA';
         }
 
         function clearDashboard() {
             document.getElementById('metric-total-voc').innerText = '0';
             resetTrendUI();
-            document.getElementById('metric-latest-issue').innerText = 'No records current';
-            document.getElementById('data-table-body').innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400">Empty workspace matrix</td></tr>`;
+            document.getElementById('metric-latest-issue').innerText = 'No records current inside workspace scope filters';
+            document.getElementById('data-table-body').innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400">Empty matrix set.</td></tr>`;
         }
 
         function switchTab(tabName) {
             document.getElementById('tab-overview').classList.toggle('hidden', tabName !== 'overview');
             document.getElementById('tab-defects').classList.toggle('hidden', tabName !== 'defects');
             
-            document.getElementById('btn-overview').className = tabName === 'overview' ? 'px-5 py-2 rounded-md text-sm font-semibold transition bg-blue-600 text-white shadow-sm' : 'px-5 py-2 rounded-md text-sm font-semibold text-slate-400 hover:text-white transition';
-            document.getElementById('btn-defects').className = tabName === 'defects' ? 'px-5 py-2 rounded-md text-sm font-semibold transition bg-blue-600 text-white shadow-sm' : 'px-5 py-2 rounded-md text-sm font-semibold text-slate-400 hover:text-white transition';
+            document.getElementById('btn-overview').className = tabName === 'overview' ? 'px-5 py-2 rounded-md text-sm font-semibold transition bg-lime-volt text-[#161d31] shadow-sm' : 'px-5 py-2 rounded-md text-sm font-semibold text-slate-400 hover:text-white transition';
+            document.getElementById('btn-defects').className = tabName === 'defects' ? 'px-5 py-2 rounded-md text-sm font-semibold transition bg-lime-volt text-[#161d31] shadow-sm' : 'px-5 py-2 rounded-md text-sm font-semibold text-slate-400 hover:text-white transition';
         }
 
         window.onload = () => { fetchDataForSelectedOperator(); };
