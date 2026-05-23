@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ANow VOC Dashboard</title>
+    <title>ANow VOC Command Center</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -63,14 +63,14 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">2. Store Code</label>
+                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">2. Store Code (Col A)</label>
                     <select id="store-selector" onchange="processAndDisplayData()" class="w-full bg-dark-input border border-[#2e3b62] text-white rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-lime-volt outline-none">
                         <option value="All">All Stores</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">3. Date Scope</label>
+                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">3. Date Scope (Col C)</label>
                     <select id="date-selector" onchange="processAndDisplayData()" class="w-full bg-dark-input border border-[#2e3b62] text-white rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-lime-volt outline-none">
                         <option value="All">All Dates</option>
                         <option value="Today">Today</option>
@@ -79,21 +79,21 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">4. Week Filter</label>
+                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">4. Week Filter (Col D)</label>
                     <select id="week-selector" onchange="processAndDisplayData()" class="w-full bg-dark-input border border-[#2e3b62] text-white rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-lime-volt outline-none">
                         <option value="All">All Weeks</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">5. Complaint Type</label>
+                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">5. Complaint Type (Col G)</label>
                     <select id="complaint-selector" onchange="processAndDisplayData()" class="w-full bg-dark-input border border-[#2e3b62] text-white rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-lime-volt outline-none">
                         <option value="All">All Complaints</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">6. RCA Category</label>
+                    <label class="block text-xs text-slate-400 font-bold uppercase tracking-wider mb-2">6. RCA Category (Col I)</label>
                     <select id="rca-selector" onchange="processAndDisplayData()" class="w-full bg-dark-input border border-[#2e3b62] text-white rounded-lg px-3 py-2 text-sm font-medium focus:ring-1 focus:ring-lime-volt outline-none">
                         <option value="All">All Categories</option>
                     </select>
@@ -136,7 +136,7 @@
                         <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total VOC Count</span>
                         <div class="flex items-baseline justify-between mt-2">
                             <span id="kpi-total-voc" class="text-3xl font-bold text-white">0</span>
-                            <span class="text-[10px] text-lime-volt bg-[#161d31] px-1.5 py-0.5 rounded font-medium">Filtered</span>
+                            <span class="text-[10px] text-lime-volt bg-[#161d31] px-1.5 py-0.5 rounded font-medium">Active Set</span>
                         </div>
                     </div>
 
@@ -169,7 +169,7 @@
             <div class="bg-panel p-6 rounded-xl border border-[#2e3b62] card-shadow">
                 <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-5 border-l-2 border-lime-volt pl-2">Top Defect Concentrations by Store Code</h3>
                 <div id="site-distribution-bars" class="space-y-4">
-                    <p class="text-sm text-slate-400 text-center">Awaiting data validation sync...</p>
+                    <p class="text-sm text-slate-400 text-center">Awaiting data streaming connection...</p>
                 </div>
             </div>
         </div>
@@ -185,7 +185,7 @@
                             </thead>
                         <tbody id="data-table-body" class="text-sm divide-y divide-[#2e3b62] text-slate-300">
                             <tr>
-                                <td colspan="10" class="p-8 text-center text-slate-400">Awaiting stream allocation...</td>
+                                <td class="p-8 text-center text-slate-400">Syncing data logs with workspace repository...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -198,14 +198,14 @@
     <script>
         const SPREADSHEET_ID = '1A4xa3c0u7VzTvQXdp_UXxkhIuEs6YeLBb-3PUgsRBOk';
         let parsedHeaders = [];
-        let globalRecords = [];
+        let cleanNormalizedRecords = [];
 
-        // Global key tracking indexes to map filters directly to columns
-        let storeKeyIdx = 0;      // Column A target
-        let dateKeyIdx = 2;       // Column C target
-        let weekKeyIdx = 3;       // Column D target
-        let complaintKeyIdx = 6;  // Column G target
-        let rcaKeyIdx = 8;        // Column I target
+        // FIXED RIGID INDEX POSITIONS CORRESPONDING TO YOUR SPREADSHEET ARCHITECTURE
+        const COL_A_STORE = 0;
+        const COL_C_DATE = 2;
+        const COL_D_WEEK = 3;
+        const COL_G_COMPLAINT = 6;
+        const COL_I_RCA = 8;
 
         async function fetchDataForSelectedOperator() {
             const operatorTabName = document.getElementById('operator-selector').value;
@@ -214,18 +214,18 @@
             statusEl.innerText = `Connecting Stream...`;
             statusEl.className = "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#161d31] text-amber-400 border border-[#2e3b62]";
 
-            const fetchUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(operatorTabName)}`;
+            // Appending tq query options to force clean, unshifted row value arrays down the data bridge
+            const fetchUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(operatorTabName)}&tq=select+*`;
 
             try {
                 const response = await fetch(fetchUrl);
-                if (!response.ok) throw new Error('Data sync failure');
+                if (!response.ok) throw new Error('Network Stream Interrupt');
                 const csvText = await response.text();
                 
-                parseCSV(csvText);
+                processRawCSVMatrix(csvText);
                 statusEl.innerText = `${operatorTabName.toUpperCase()} PIPELINE ACTIVE`;
                 statusEl.className = "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-[#161d31] text-lime-volt border border-[#2e3b62]";
                 
-                mapDynamicHeaderIndices();
                 populateFilterDropdowns();
                 processAndDisplayData();
             } catch (error) {
@@ -235,65 +235,59 @@
             }
         }
 
-        function parseCSV(text) {
-            // Regex to parse CSV lines while ignoring internal commas inside double quotes safely
-            const regex = /,(?=(?:(?:[^"]*"){2})*[^"]*$)/;
+        function processRawCSVMatrix(text) {
+            // High reliability parser matching double quoted text and skipping nested row commas
+            const splitRegex = /,(?=(?:(?:[^"]*"){2})*[^"]*$)/;
             const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
             
             if (lines.length === 0) {
-                globalRecords = [];
+                cleanNormalizedRecords = [];
                 parsedHeaders = [];
                 return;
             }
 
-            parsedHeaders = lines[0].split(regex).map(h => h.replace(/^"|"$/g, '').trim());
+            parsedHeaders = lines[0].split(splitRegex).map(h => h.replace(/^"|"$/g, '').trim());
             
-            globalRecords = lines.slice(1).map(line => {
-                return line.split(regex).map(c => c.replace(/^"|"$/g, '').trim());
+            // Clean unpopulated system text characters and normalize column structure lengths
+            cleanNormalizedRecords = lines.slice(1).map(line => {
+                let cellArray = line.split(splitRegex).map(c => c.replace(/^"|"$/g, '').trim());
+                while(cellArray.length < 15) {
+                    cellArray.push('');
+                }
+                return cellArray;
             });
         }
 
-        function mapDynamicHeaderIndices() {
-            if (parsedHeaders.length === 0) return;
-
-            // Normalize names to prevent mismatching from casing or spaces
-            const normHeaders = parsedHeaders.map(h => h.toLowerCase().replace(/[^a-z0-9]/g, ''));
-
-            // Find match by keyword string fallback to exact column assignments if gviz indices warp
-            const findIndex = (keywords, defaultFallback) => {
-                const found = normHeaders.findIndex(h => keywords.some(kw => h.includes(kw)));
-                return found !== -1 ? found : defaultFallback;
-            };
-
-            storeKeyIdx = findIndex(['store', 'site', 'hub', 'storecode'], 0);        // Col A
-            dateKeyIdx = findIndex(['date', 'time', 'timestamp'], 2);                // Col C
-            weekKeyIdx = findIndex(['week', 'wk'], 3);                               // Col D
-            complaintKeyIdx = findIndex(['complaint', 'defect', 'type'], 6);         // Col G
-            rcaKeyIdx = findIndex(['rca', 'root', 'category'], 8);                   // Col I
-        }
-
         function populateFilterDropdowns() {
-            setupDropdownIndexed('store-selector', storeKeyIdx, 'All Stores');
-            setupDropdownIndexed('week-selector', weekKeyIdx, 'All Weeks');
-            setupDropdownIndexed('complaint-selector', complaintKeyIdx, 'All Complaints');
-            setupDropdownIndexed('rca-selector', rcaKeyIdx, 'All Categories');
+            buildDropdownOptions('store-selector', COL_A_STORE, 'All Stores');
+            buildDropdownOptions('week-selector', COL_D_WEEK, 'All Weeks');
+            buildDropdownOptions('complaint-selector', COL_G_COMPLAINT, 'All Complaints');
+            buildDropdownOptions('rca-selector', COL_I_RCA, 'All Categories');
         }
 
-        function setupDropdownIndexed(elementId, colIdx, defaultText) {
+        function buildDropdownOptions(elementId, targetColIdx, defaultText) {
             const selector = document.getElementById(elementId);
-            const currentSelection = selector.value;
+            const activeValue = selector.value;
             selector.innerHTML = `<option value="All">${defaultText}</option>`;
             
-            if (globalRecords.length === 0 || colIdx >= parsedHeaders.length) return;
+            if (cleanNormalizedRecords.length === 0) return;
             
-            const uniqueValues = [...new Set(globalRecords.map(r => r[colIdx]))].filter(Boolean).sort();
+            const dynamicSet = new Set();
+            cleanNormalizedRecords.forEach(row => {
+                if (row[targetColIdx] !== undefined && row[targetColIdx] !== null && row[targetColIdx] !== '') {
+                    dynamicSet.add(row[targetColIdx]);
+                }
+            });
+
+            const uniqueValues = [...dynamicSet].sort();
             uniqueValues.forEach(val => {
                 const opt = document.createElement('option');
                 opt.value = val;
                 opt.innerText = val;
                 selector.appendChild(opt);
             });
-            if (uniqueValues.includes(currentSelection)) selector.value = currentSelection;
+            
+            if (uniqueValues.includes(activeValue)) selector.value = activeValue;
         }
 
         function parseFlexibleDate(dateStr) {
@@ -316,7 +310,7 @@
         }
 
         function processAndDisplayData() {
-            if (globalRecords.length === 0) {
+            if (cleanNormalizedRecords.length === 0) {
                 clearDashboard();
                 return;
             }
@@ -327,15 +321,15 @@
             const fComplaint = document.getElementById('complaint-selector').value;
             const fRca = document.getElementById('rca-selector').value;
 
-            // Strategic Filtration Pipeline
-            let displayRecords = globalRecords.filter(r => {
-                if (fStore !== 'All' && r[storeKeyIdx] !== fStore) return false;
-                if (fWeek !== 'All' && r[weekKeyIdx] !== fWeek) return false;
-                if (fComplaint !== 'All' && r[complaintKeyIdx] !== fComplaint) return false;
-                if (fRca !== 'All' && r[rcaKeyIdx] !== fRca) return false;
+            // Strict Filter Mapping Suite
+            let filteredResults = cleanNormalizedRecords.filter(row => {
+                if (fStore !== 'All' && row[COL_A_STORE] !== fStore) return false;
+                if (fWeek !== 'All' && row[COL_D_WEEK] !== fWeek) return false;
+                if (fComplaint !== 'All' && row[COL_G_COMPLAINT] !== fComplaint) return false;
+                if (fRca !== 'All' && row[COL_I_RCA] !== fRca) return false;
                 
-                if (fDate !== 'All' && dateKeyIdx < r.length) {
-                    const recordDate = parseFlexibleDate(r[dateKeyIdx]);
+                if (fDate !== 'All') {
+                    const recordDate = parseFlexibleDate(row[COL_C_DATE]);
                     if (isNaN(recordDate.getTime())) return false;
                     
                     const todayStr = new Date().toDateString();
@@ -351,32 +345,34 @@
                 return true;
             });
 
-            // 1. Trend Deltas (calculated using store base filter scope)
-            let storeFilteredBase = globalRecords;
+            // 1. Calculate historical metrics trends
+            let baseStoreRecords = cleanNormalizedRecords;
             if (fStore !== 'All') {
-                storeFilteredBase = globalRecords.filter(r => r[storeKeyIdx] === fStore);
+                baseStoreRecords = cleanNormalizedRecords.filter(r => r[COL_A_STORE] === fStore);
             }
-            calculateTrends(storeFilteredBase);
+            calculateTrends(baseStoreRecords);
 
-            // 2. Generate Strategic Performance Metrics Summary Index
-            calculateStrategicKPIs(displayRecords);
+            // 2. Refresh Strategic Cards Summaries
+            calculateStrategicKPIs(filteredResults);
 
-            // 3. Render Horizontal Distribution Bars
-            renderSiteDistribution(displayRecords);
+            // 3. Render Top Defect Bars
+            renderSiteDistribution(filteredResults);
 
-            // 4. Construct Data Ledger Matrix Viewports
+            // 4. Populate Detailed Records Log View Template
             const tableHead = document.getElementById('table-head');
             tableHead.innerHTML = `<tr>${parsedHeaders.map(h => `<th class="p-4 font-semibold text-slate-300 border-b border-[#2e3b62]">${h}</th>`).join('')}</tr>`;
 
             const tbody = document.getElementById('data-table-body');
-            if (displayRecords.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="${parsedHeaders.length}" class="p-8 text-center text-slate-400">No matching tracking data located.</td></tr>`;
+            if (filteredResults.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="${parsedHeaders.length}" class="p-8 text-center text-slate-400">No logs match the current configuration rules.</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = displayRecords.slice(-100).map(row => {
+            tbody.innerHTML = filteredResults.slice(-100).map(row => {
                 return `<tr class="hover:bg-[#192038] transition border-b border-[#2e3b62]">
-                    ${row.map((val, idx) => `<td class="p-4 ${idx === storeKeyIdx ? 'text-lime-volt font-semibold' : 'text-slate-300'}">${val}</td>`).join('')}
+                    ${row.slice(0, parsedHeaders.length).map((val, idx) => `
+                        <td class="p-4 ${idx === COL_A_STORE ? 'text-lime-volt font-semibold' : 'text-slate-300'}">${val}</td>
+                    `).join('')}
                 </tr>`;
             }).reverse().join('');
         }
@@ -389,43 +385,43 @@
             let pickerMistakesCount = 0;
             let catalogueIssuesCount = 0;
 
-            records.forEach(r => {
-                const rcaVal = (r[rcaKeyIdx] || '').toLowerCase().trim();
-                const complaintVal = (r[complaintKeyIdx] || '').toLowerCase().trim();
+            records.forEach(row => {
+                const rcaValue = (row[COL_I_RCA] || '').toLowerCase().trim();
+                const complaintValue = (row[COL_G_COMPLAINT] || '').toLowerCase().trim();
 
-                // Precise condition matching to group your tracking issues perfectly
-                if (rcaVal.includes('qc miss') || rcaVal.includes('qc_miss')) qcMissCount++;
-                if (rcaVal.includes('picker') || rcaVal.includes('picking') || rcaVal.includes('mistake')) pickerMistakesCount++;
-                if (complaintVal.includes('catalogue') || complaintVal.includes('catalog') || rcaVal.includes('catalogue')) catalogueIssuesCount++;
+                // Group cross checks matching your categories
+                if (rcaValue.includes('qc miss') || rcaValue.includes('qc_miss')) qcMissCount++;
+                if (rcaValue.includes('picker') || rcaValue.includes('picking') || rcaValue.includes('mistake')) pickerMistakesCount++;
+                if (complaintValue.includes('catalogue') || complaintValue.includes('catalog') || rcaValue.includes('catalogue')) catalogueIssuesCount++;
             });
 
             document.getElementById('kpi-qc-miss').innerText = qcMissCount;
             document.getElementById('kpi-picker-mistakes').innerText = pickerMistakesCount;
             document.getElementById('kpi-catalogue-issues').innerText = catalogueIssuesCount;
 
-            const formatPct = (count) => totalCount > 0 ? `${((count / totalCount) * 100).toFixed(1)}% of total` : '0.0% of total';
-            document.getElementById('pct-qc-miss').innerText = formatPct(qcMissCount);
-            document.getElementById('pct-picker-mistakes').innerText = formatPct(pickerMistakesCount);
-            document.getElementById('pct-catalogue-issues').innerText = formatPct(catalogueIssuesCount);
+            const calcPercentageString = (val) => totalCount > 0 ? `${((val / totalCount) * 100).toFixed(1)}% of total` : '0.0% of total';
+            document.getElementById('pct-qc-miss').innerText = calcPercentageString(qcMissCount);
+            document.getElementById('pct-picker-mistakes').innerText = calcPercentageString(pickerMistakesCount);
+            document.getElementById('pct-catalogue-issues').innerText = calcPercentageString(catalogueIssuesCount);
         }
 
         function calculateTrends(records) {
-            if (records.length === 0 || dateKeyIdx >= parsedHeaders.length) {
+            if (records.length === 0) {
                 resetTrendUI();
                 return;
             }
             const now = new Date();
             const oneDay = 24 * 60 * 60 * 1000;
 
-            const currentWeekCount = records.filter(r => (now - parseFlexibleDate(r[dateKeyIdx])) / oneDay <= 7).length;
+            const currentWeekCount = records.filter(r => (now - parseFlexibleDate(r[COL_C_DATE])) / oneDay <= 7).length;
             const priorWeekCount = records.filter(r => {
-                const diff = (now - parseFlexibleDate(r[dateKeyIdx])) / oneDay;
+                const diff = (now - parseFlexibleDate(r[COL_C_DATE])) / oneDay;
                 return diff > 7 && diff <= 14;
             }).length;
 
-            const currentMonthCount = records.filter(r => (now - parseFlexibleDate(r[dateKeyIdx])) / oneDay <= 30).length;
+            const currentMonthCount = records.filter(r => (now - parseFlexibleDate(r[COL_C_DATE])) / oneDay <= 30).length;
             const priorMonthCount = records.filter(r => {
-                const diff = (now - parseFlexibleDate(r[dateKeyIdx])) / oneDay;
+                const diff = (now - parseFlexibleDate(r[COL_C_DATE])) / oneDay;
                 return diff > 30 && diff <= 60;
             }).length;
 
@@ -462,13 +458,13 @@
         function renderSiteDistribution(records) {
             const container = document.getElementById('site-distribution-bars');
             if (records.length === 0) {
-                container.innerHTML = `<p class="text-sm text-slate-400 text-center">No location metrics available.</p>`;
+                container.innerHTML = `<p class="text-sm text-slate-400 text-center">No location metrics inside active parameters.</p>`;
                 return;
             }
 
             const counts = {};
-            records.forEach(r => {
-                const store = r[storeKeyIdx] || 'Unknown Hub';
+            records.forEach(row => {
+                const store = row[COL_A_STORE] || 'Blank Hub Field';
                 counts[store] = (counts[store] || 0) + 1;
             });
 
@@ -479,8 +475,8 @@
                 const pct = maxVal > 0 ? (count / maxVal) * 100 : 0;
                 return `<div class="space-y-1">
                     <div class="flex justify-between text-xs font-semibold text-slate-300">
-                        <span>Store: ${store}</span>
-                        <span class="text-lime-volt">${count} Incidents</span>
+                        <span>Store Code: ${store}</span>
+                        <span class="text-lime-volt">${count} Registered Defects</span>
                     </div>
                     <div class="w-full bg-[#161d31] h-3 rounded-full overflow-hidden border border-[#2e3b62]">
                         <div class="bg-lime-volt h-full rounded-full transition-all duration-700" style="width: ${pct}%"></div>
@@ -502,7 +498,7 @@
             document.getElementById('kpi-picker-mistakes').innerText = '0';
             document.getElementById('kpi-catalogue-issues').innerText = '0';
             resetTrendUI();
-            document.getElementById('data-table-body').innerHTML = `<tr><td colspan="10" class="p-8 text-center text-slate-400">Empty workspace matrix.</td></tr>`;
+            document.getElementById('data-table-body').innerHTML = `<tr><td class="p-8 text-center text-slate-400">Empty dashboard bounds.</td></tr>`;
         }
 
         function switchTab(tabName) {
